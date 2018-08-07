@@ -29,17 +29,8 @@ You can login to Lextend as follows:
 * http://IP
 
 ## Contributing
-Fork it!
-Create your feature branch: git checkout -b my-new-feature
-Commit your changes: 
-```
-git commit -am 'Add some feature'
-```
-Push to the branch: 
-```
-git push origin my-new-feature
-```
-Submit a pull request :D
+If you are just starting starting with GitHub, you can follow the very good guide under:
+https://codeburst.io/a-step-by-step-guide-to-making-your-first-github-contribution-5302260a2940
 
 ## License
 The lextend package is made available under the terms of the GNU Public License v3
