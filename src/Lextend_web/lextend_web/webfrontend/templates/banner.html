@@ -1,0 +1,39 @@
+<div id="header" class="header" data-role="header"  data-position="fixed">
+    <div class ="ui-grid-a">
+        <div class="ui-block-a">
+          <div class="centerBlock">
+               <a href="https://www.lextira.ch/portfolio/lextend/"
+                  rel="eternal" class="">
+                        <img style="vertical-align:middle;margin-left:10px"
+                             src="../static/custom_images/lextend_logo_banner.png">
+               </a>
+          </div>
+        </div>
+        <div class="ui-block-b">
+            <span style="float:right; margin-right:10px">
+                <span class="ui-block-a ui-nodisc-icon">
+                    {% if 'username' in session %}
+                        {% with %}
+                          {% set image="/static/custom_images/home_b.png" %}
+                          {% set url='/' %}
+                          {% include "banner_button.html" %}
+                        {% endwith %}
+                        {% with %}
+                          {% set image="/static/custom_images/logout_b.png" %}
+                          {% set url=url_for('signout') %}
+                          {% include "banner_button.html" %}
+                        {% endwith %}
+                    {% endif %}
+{#                    <span id="banner_egger_logo" class="ui-block-b">#}
+{#                        <a href="https://www.lextira.ch"#}
+{#                           rel="external"#}
+{#                           class="">#}
+{#                        <img style="vertical-align:middle;margin-left:10px"#}
+{#                             src="../static/custom_images/Egger_Logo_RGB-144x50.png">#}
+{#                        </a>#}
+{#                    </span>#}
+                </span>
+            </span>
+        </div>
+    </div>
+</div>

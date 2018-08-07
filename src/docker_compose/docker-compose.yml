@@ -1,0 +1,110 @@
+# Lextend
+# Copyright (C) 2018 Lextira AG
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+version: '3'
+
+services:  
+  flic_service:
+    image: alcodex/lextend_flicb 
+    volumes:
+       -  /home/autoadmin/flicd:/config
+    restart: unless-stopped
+    network_mode: "host"
+    cap_add:
+     - NET_ADMIN
+  samba:
+    image: alcodex/samba   
+    volumes:
+       - /etc/samba:/etc/samba
+       - /root/.config/lextend:/root/.config/lextend
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    privileged: true
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+
+
+  lextend_rpi_manager:
+    image: alcodex/lextend_rpi_manager 
+    volumes:
+       - var:/var/log
+       - /root/.config/lextend/:/root/.config/lextend
+       - /etc/network:/etc/network
+       - /etc/samba:/etc/samba
+       - /var/run/systemd:/var/run/systemd
+    environment:
+        - USER_DEFINED_PORT_RPI=80
+        - USER_DEFINED_PORT_WEB=8000
+    restart: unless-stopped
+    privileged: true
+    network_mode: "host"
+    depends_on:
+         - lextend_engine
+
+  lextend_gpio_listener:
+    image: alcodex/lextend_gpio_listener 
+    volumes:
+       - var:/var/log
+       - /root/.config/lextend:/root/.config/lextend
+       - /etc/network:/etc/network
+       - /etc/samba:/etc/samba
+    restart: unless-stopped
+    network_mode: "host"
+    depends_on:
+           - lextend_engine          
+  
+
+  lextend_flic_listener:
+    image: alcodex/lextend_flic_listener
+    volumes:
+       - var:/var/log
+       - /root/.config/lextend:/root/.config/lextend
+       - /etc/network:/etc/network
+       - /etc/samba:/etc/samba
+    restart: unless-stopped
+    network_mode: "host"
+    depends_on:
+           - lextend_engine
+
+
+  lextend_engine:
+    image: alcodex/lextend_engine
+    volumes:
+       - var:/var/log
+       - /root/.config/lextend:/root/.config/lextend
+       - /etc/network:/etc/network
+    restart: unless-stopped
+    network_mode: "host"
+    depends_on: 
+         - lextend_webfront
+  lextend_webfront:
+    image: alcodex/lextend_webfront
+    volumes:
+       - var:/var/log
+       - /root/.config/lextend:/root/.config/lextend
+       - /etc/network:/etc/network
+       - /etc/samba:/etc/samba
+    environment:
+         - USER_DEFINED_PORT_WEB=8000
+         - USER_DEFINED_PORT_RPI=80
+    restart: unless-stopped
+    network_mode: "host"
+volumes:
+  var :
+       
+ 

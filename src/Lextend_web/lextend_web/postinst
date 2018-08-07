@@ -1,0 +1,15 @@
+                    
+            pyinotify          
+            Flask              
+            Flask-cors         
+            requests           
+            pam                
+            rpyc==3.3.0               
+            netifaces          
+            ipaddress          
+            xmltodict                         
+            retrying
+            lxml
+            soco==0.12
+                 
+
