@@ -18,7 +18,7 @@ version: '3'
 
 services:  
   flic_service:
-    image: alcodex/lextend_flicb 
+    image: superkikim/flicd-rpi3 
     volumes:
        -  /home/autoadmin/flicd:/config
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
     cap_add:
      - NET_ADMIN
   samba:
-    image: alcodex/samba   
+    build: samba   
     volumes:
        - /etc/samba:/etc/samba
        - /root/.config/lextend:/root/.config/lextend
@@ -40,7 +40,7 @@ services:
 
 
   lextend_rpi_manager:
-    image: alcodex/lextend_rpi_manager 
+    build: Lextend_Rpi_manager  
     volumes:
        - var:/var/log
        - /root/.config/lextend/:/root/.config/lextend
@@ -57,7 +57,7 @@ services:
          - lextend_engine
 
   lextend_gpio_listener:
-    image: alcodex/lextend_gpio_listener 
+    build: Lextend_GPIO 
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
@@ -70,7 +70,7 @@ services:
   
 
   lextend_flic_listener:
-    image: alcodex/lextend_flic_listener
+    build: Lextend_flic_listener 
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
@@ -83,7 +83,7 @@ services:
 
 
   lextend_engine:
-    image: alcodex/lextend_engine
+    build: Lextend_engine
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
@@ -93,7 +93,7 @@ services:
     depends_on: 
          - lextend_webfront
   lextend_webfront:
-    image: alcodex/lextend_webfront
+    build: Lextend_web
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
