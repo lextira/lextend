@@ -43,6 +43,8 @@ Check Docker installation using the “docker-compose  - -version” command. If
 * `docker-compose --version`
 
 ## Install Lextend
+### Install git
+*  `sudo apt-get install git`
 ### Clone Lextend from GitHub
 *  `git clone https://github.com/lextira/lextend.git`
 ### Start Lextend
@@ -61,7 +63,7 @@ You can login to Lextend as follows:
 * http://IP
 
 ## Contributing
-If you are just starting starting with GitHub, you can follow the very good guide under:
+If you are just starting with GitHub, you can follow this guide:
 * https://codeburst.io/a-step-by-step-guide-to-making-your-first-github-contribution-5302260a2940
 
 ## License
