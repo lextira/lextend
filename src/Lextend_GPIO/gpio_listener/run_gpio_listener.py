@@ -57,10 +57,29 @@ class GpioListener(object):
     def set_network(self):
         """ Set /etc/network/interfaces settings from loaded settings.
         """
-        change_ip_address(self.cfg.general.lextend.ip)
-        change_netmask(self.cfg.general.lextend.netmask)
-        change_gateway(self.cfg.general.lextend.gateway)
-        change_dns("%s %s" % (self.cfg.general.lextend.dns1, self.cfg.general.lextend.dns2))
+        if self.cfg.general.lextend.wifi.enable == True:
+
+            if self.cfg.general.wifi_static.enable == True:
+                # static
+                change_wifi_static(self.cfg.general.wifi_static.ip, self.cfg.general.wifi_static.netmask,
+                                       self.cfg.general.wifi_static.gateway, self.cfg.general.wifi_static.dns1,
+                                       self.cfg.general.wifi_static.dns2)
+
+            elif self.cfg.general.wifi_static.enable == False:
+                # dhcp
+                change_wifi_dhcp()
+                change_wpa_supplicant(self.cfg.general.wifi_dhcp.ssid, self.cfg.general.wifi_dhcp.password)
+
+        elif self.cfg.general.lextend.wifi.enable == False:
+
+            if self.cfg.general.lextend.enable == True:
+
+                change_ethernet_static(self.cfg.general.lextend.ip, self.cfg.general.lextend.netmask,
+                                       self.cfg.general.lextend.gateway, self.cfg.general.lextend.dns1,
+                                       self.cfg.general.lextend.dns2)
+
+            elif self.cfg.general.lextend.enable == False:
+                change_ethernet_dhcp()
 
     def reset_do(self):
         self.logger.info("GPIO: config reset.")

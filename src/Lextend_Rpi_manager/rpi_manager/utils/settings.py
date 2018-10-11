@@ -40,5 +40,5 @@ RPC_PORT_1                  = 2882
 RPC_PORT_2                  = 2883
 
 # version
-SOFTWARE_VERSION           = "v4.8-3.3"
+SOFTWARE_VERSION           = "v4.8-4"
 

@@ -45,5 +45,5 @@ OTA_SERVER_LOGIN           = "lextendupdate@lextend.ch"
 OTA_SERVER_PASSWORD        = "4ertQ223aEE87"
 
 # version
-SOFTWARE_VERSION           = "v4.8-3.3"
+SOFTWARE_VERSION           = "v4.8-4"
 

@@ -14,17 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
- # Use an official Python runtime as a parent image
-FROM arm32v7/python:3.4-jessie
-
+# Use a prebuild image
+FROM alcodex/lextend_baseimage
 # Set the working directory to /app
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
 copy  /gpio_listener /app
-
-# Install any needed packages specified in requirements.txt
-RUN  pip3 install -r postinst
 
 # Run run_lextend_webfrontend.py when the container launches
 CMD ["python3","run_gpio_listener.py"]

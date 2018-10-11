@@ -18,7 +18,7 @@ version: '3'
 
 services:  
   flic_service:
-    image: superkikim/flicd-rpi3 
+    image: superkikim/flicd-rpi3
     volumes:
        -  /home/autoadmin/flicd:/config
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
     cap_add:
      - NET_ADMIN
   samba:
-    build: samba   
+    build: samba
     volumes:
        - /etc/samba:/etc/samba
        - /root/.config/lextend:/root/.config/lextend
@@ -40,37 +40,37 @@ services:
 
 
   lextend_rpi_manager:
-    build: Lextend_Rpi_manager  
+    build: Lextend_Rpi_manager
     volumes:
        - var:/var/log
        - /root/.config/lextend/:/root/.config/lextend
        - /etc/network:/etc/network
        - /etc/samba:/etc/samba
        - /var/run/systemd:/var/run/systemd
+       - /etc/wpa_supplicant:/etc/wpa_supplicant
     environment:
         - USER_DEFINED_PORT_RPI=80
         - USER_DEFINED_PORT_WEB=8000
     restart: unless-stopped
     privileged: true
     network_mode: "host"
-    depends_on:
-         - lextend_engine
+
 
   lextend_gpio_listener:
-    build: Lextend_GPIO 
+    build: Lextend_GPIO
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
        - /etc/network:/etc/network
        - /etc/samba:/etc/samba
+       - /sys/class/gpio:/sys/class/gpio
     restart: unless-stopped
     network_mode: "host"
-    depends_on:
-           - lextend_engine          
-  
+    privileged: true
+   
 
   lextend_flic_listener:
-    build: Lextend_flic_listener 
+    build: Lextend_flic_listener
     volumes:
        - var:/var/log
        - /root/.config/lextend:/root/.config/lextend
@@ -78,10 +78,8 @@ services:
        - /etc/samba:/etc/samba
     restart: unless-stopped
     network_mode: "host"
-    depends_on:
-           - lextend_engine
-
-
+    privileged: true
+   
   lextend_engine:
     build: Lextend_engine
     volumes:
@@ -90,8 +88,7 @@ services:
        - /etc/network:/etc/network
     restart: unless-stopped
     network_mode: "host"
-    depends_on: 
-         - lextend_webfront
+
   lextend_webfront:
     build: Lextend_web
     volumes:
@@ -104,7 +101,10 @@ services:
          - USER_DEFINED_PORT_RPI=80
     restart: unless-stopped
     network_mode: "host"
+    privileged: true
+  
 volumes:
   var :
-       
- 
+
+
+

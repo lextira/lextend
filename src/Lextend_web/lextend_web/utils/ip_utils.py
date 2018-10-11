@@ -30,13 +30,7 @@ def get_local_ip():
     # ethernet_interface = ""
     ipv4_address = ""
     for interface in interfaces:
-        # if "wlan0" in interface:
-        #     ethernet_addresses = ni.ifaddresses(interface)
-        #     if 2 in ethernet_addresses:
-        #         ipv4_address = ethernet_addresses[2][0]["addr"]
-        #         break
-
-        if "eth0" in interface or "enp" in interface:
+        if "eth0" in interface or "enp" in interface or "wlan0" in interface:
             ethernet_addresses = ni.ifaddresses(interface)
             if 2 in ethernet_addresses:
                 ipv4_address = ethernet_addresses[2][0]["addr"]
@@ -45,122 +39,82 @@ def get_local_ip():
     return ipv4_address
 
 
-def change_network_field(fieldname, parameter):
+def change_ethernet_static(new_ip_address, new_netmask, new_gateway, new_dns, new_dns2):
     src_file = "/etc/network/interfaces"
-
     # Create a backup, don't use .bak, overwritten by fileinput
     shutil.copyfile(src_file, src_file + ".backup")
-    eth_found = False
-    f = fileinput.input(src_file, inplace=True)
-    for line in f:
-        if "eth" in line:
-            eth_found = True
-        if eth_found:
-            if re.search(r'\b%s\b' % fieldname, line):
-                position = line.find(fieldname)
-                line = line[:position] + "%s %s" % (fieldname, str(parameter))
-                print(line.rstrip())
-                continue
-            # skip "network" and "broadcast"
-            if re.search(r'\b%s\b' % "network", line):
-                continue
-            if re.search(r'\b%s\b' % "broadcast", line):
-                continue
 
-        print(line.rstrip())
-    f.close()
+    with open(src_file, 'w') as f:
+        f.write("auto lo\n")
+        f.write("iface lo inet loopback\n")
+        f.write("allow-hotplug eth0\n")
+        f.write("iface eth0 inet static\n")
+        f.write("address %s\n" % new_ip_address)
+        f.write("netmask %s\n" % new_netmask)
+        f.write("gateway %s\n" % new_gateway)
+        f.write("nameservers %s %s\n" % (new_dns, new_dns2))
 
 
-def change_ip_address(new_ip_address):
-    """ Changes the ip address in /etc/network/interfaces file.
-    A backup file is created before .
-    """
-    change_network_field("address", new_ip_address)
+def change_ethernet_dhcp():
+    src_file = "/etc/network/interfaces"
+    # Create a backup, don't use .bak, overwritten by fileinput
+    shutil.copyfile(src_file, src_file + ".backup")
+
+    with open(src_file, 'w') as f:
+        f.write("auto lo\n")
+        f.write("iface lo inet loopback\n")
+        f.write("allow-hotplug eth0\n")
+        f.write("iface eth0 inet dhcp\n")
 
 
-def change_netmask(new_netmask):
-    """ Changes the netmask in /etc/network/interfaces file.
-    A backup file is created before .
-    """
-    change_network_field("netmask", new_netmask)
+def change_wifi_static(new_ip_address, new_netmask, new_gateway, new_dns, new_dns2):
+    src_file = "/etc/network/interfaces"
+    # Create a backup, don't use .bak, overwritten by fileinput
+    shutil.copyfile(src_file, src_file + ".backup")
+
+    with open(src_file, 'w') as f:
+        f.write("auto lo\n")
+        f.write("iface lo inet loopback\n")
+        f.write("allow-hotplug wlan0\n")
+        f.write("iface wlan0 inet static\n")
+        f.write("address %s\n" % new_ip_address)
+        f.write("netmask %s\n" % new_netmask)
+        f.write("gateway %s\n" % new_gateway)
+        f.write("nameservers %s %s\n" % (new_dns, new_dns2))
+        f.write("wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\n")
 
 
-def change_gateway(new_gateway):
-    """ Changes the gateway in /etc/network/interfaces file.
-    A backup file is created before .
-    """
-    change_network_field("gateway", new_gateway)
+def change_wifi_dhcp():
+    src_file = "/etc/network/interfaces"
+    # Create a backup, don't use .bak, overwritten by fileinput
+    shutil.copyfile(src_file, src_file + ".backup")
+
+    with open(src_file, 'w') as f:
+        f.write("auto lo\n")
+        f.write("iface lo inet loopback\n")
+        f.write("allow-hotplug wlan0\n")
+        f.write("iface wlan0 inet dhcp\n")
+        f.write("wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf\n")
 
 
-def change_dns(new_dns):
-    """ Changes the dsn in /etc/network/interfaces file.
-    A backup file is created before .
-    """
-    change_network_field("dns-nameservers", new_dns)
-
-
-def change_wlan(winame):
-    src_file = "/home/tony/11-4-2018-working/etc/network/interfaces"
-    shutil.copyfile(src_file, src_file + "_back")
-    no_wlan = False
-    with open(src_file, "r") as read_file:
-        content = read_file.readlines()
-        for line in content:
-            if winame not in line:
-                no_wlan = True
-            else:
-                no_wlan = False
-    if no_wlan:
-        content.append("auto %s\niface %s inet dhcp\n" % (winame, winame))
-        with open(src_file, "w") as write_file:
-            for line in content:
-                write_file.write(line)
-
-
-def change_wpa_supplicant(fieldname, parameter):
+def change_wpa_supplicant(ssid, psk):
     """
     Changes the fields in /etc/wpa_supplicant/wpa_supplicant.conf
     :param fieldname:
     :param parameter:
     :return:
     """
-    src_file1 = "/etc/wpa_supplicant/wpa_supplicant.conf"
-    src_file = "/home/tony/11-4-2018-working/etc/wpa_supplicant/wpa_supplicant.conf"
+    src_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
     # Create a backup, don't use .bak, overwritten by fileinput
     shutil.copyfile(src_file, src_file + ".backup")
-    network_found = False
-    with open(src_file) as f1:
-        lines = f1.readlines()
-        for line in lines:
-            if "network" in line:
-                network_found = True
 
-    if not network_found:
-        lines = ["network={", "\n", "ssid=\"\"", "\n", "psk=\"\"", "\n", "}"]
-        with open(src_file, "w") as g:
-            for line in lines:
-                g.write(line)
-
-    f = fileinput.input(src_file, inplace=True)
-    for line in f:
-        if re.search(r'\b%s\b' % fieldname, line):
-            position = line.find(fieldname)
-            line = line[:position] + "%s=\"%s\"" % (fieldname, str(parameter))
-            print(line.rstrip())
-            continue
-        print(line.rstrip())
-    f.close()
+    with open(src_file,"w") as f:
+        f.write("ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev\n")
+        f.write("update_config=1\n")
+        f.write("country=GB\n\n")
+        f.write("network={\n")
+        f.write("\tssid=\"%s\"\n" % ssid)
+        f.write("\tpsk=\"%s\"\n}" % psk)
 
 
-def change_ssid(new_ssid):
-    """ Changes the ssid in /etc/wpa_supplicant/wpa_supplicant.conf file.
-    A backup file is created before .
-    """
-    change_wpa_supplicant("ssid", new_ssid)
 
-
-def change_psk(new_psk):
-    """ Changes the psk in /etc/wpa_supplicant/wpa_supplicant.conf file.
-    A backup file is created before .
-    """
-    change_wpa_supplicant("psk", new_psk)

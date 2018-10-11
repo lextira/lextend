@@ -132,14 +132,28 @@ class ConfigManager(object):
             # Prepare the structures
             self.general = dummy()
             self.general.lextend = dummy()
-            self.general.wifi = dummy()
+
+            # self.general.static = dummy()
             self.general.miniserver = dummy()
             self.general.admin = dummy()
+
+            self.general.lextend.wifi = dummy()
+            self.general.wifi_static = dummy()
+            self.general.wifi_dhcp = dummy()
 
             # read the settings
             lextend_ip = "192.168.1.222"
             if self.lextend_ip != "":
                 lextend_ip = self.lextend_ip
+
+            # ethernet
+
+            tmp = self.config.get(section + "/Lextend/WiFi/enable", "False")
+            self.general.lextend.wifi.enable = True if "True" in tmp else False
+
+            tmp1 = self.config.get(section + "/Lextend/Ethernet/Static/enable", "False")
+            self.general.lextend.enable = True if "True" in tmp1 else False
+
             self.general.lextend.ip = self.config.get(section + "/Lextend/ip",
                                                       lextend_ip)
             self.general.lextend.netmask = self.config.get(section + "/Lextend/netmask",
@@ -157,16 +171,40 @@ class ConfigManager(object):
                                                          "192.168.1.230")
             self.general.miniserver.port = self.config.get(section + "/Miniserver/port",
                                                            "5050")
-            tmp = self.config.get(section + "/Wifi/enable", "False")
-            # self.general.wifi.enable = True if "True" in tmp else False
-            self.general.wifi.ssid = self.config.get(section + "/Wifi/ssid",
-                                                     "alcodex")
-            self.general.wifi.password = self.config.get(section + "/Wifi/password",
-                                                         "alcodex")
+
+
             self.general.admin.name = self.config.get(section + "/Admin/name",
                                                       "admin")
             self.general.admin.password = self.config.get(section + "/Admin/password",
                                                           "admin")
+
+            tmp2 = self.config.get(section + "/WiFi/Static/enable", "False")
+            self.general.wifi_static.enable = True if "True" in tmp2 else False
+            # static
+            self.general.wifi_static.ip = self.config.get(section + "/WiFi/Static/ip",
+                                                      lextend_ip)
+            self.general.wifi_static.netmask = self.config.get(section + "/WiFi/Static/netmask",
+                                                           "255.255.255.0")
+            self.general.wifi_static.gateway = self.config.get(section + "/WiFi/Static/gateway",
+                                                           "192.168.1.1")
+            self.general.wifi_static.dns1 = self.config.get(section + "/WiFi/Static/dns1",
+                                                        "8.8.8.8")
+            self.general.wifi_static.dns2 = self.config.get(section + "/WiFi/Static/dns2",
+                                                        "8.8.4.4")
+            self.general.wifi_static.port = self.config.get(section + "/WiFi/Static/port",
+                                                        "5051")
+
+
+            self.general.wifi_static.ssid = self.config.get(section + "/WiFi/Static/ssid",
+                                                               "alcodex")
+            self.general.wifi_static.password = self.config.get(section + "/WiFi/Static/password",
+                                                                   "alcodex")
+
+            # dhcp
+            self.general.wifi_dhcp.ssid = self.config.get(section + "/WiFi/Dhcp/ssid",
+                                                               "alcodex1")
+            self.general.wifi_dhcp.password = self.config.get(section + "/WiFi/Dhcp/password",
+                                                                   "alcodex1")
 
         def load_sonos_doorbell():
             section = "Services/Sonos_Doorbell"
@@ -272,6 +310,9 @@ class ConfigManager(object):
             section = "General"
             self.config.put(section + "/version", "1")
 
+            # ethernet
+            self.config.put(section + "/Lextend/WiFi/enable", str(self.general.lextend.wifi.enable))
+            self.config.put(section + "/Lextend/Ethernet/Static/enable", str(self.general.lextend.enable))
             self.config.put(section + "/Lextend/ip", self.general.lextend.ip)
             self.config.put(section + "/Lextend/netmask", self.general.lextend.netmask)
             self.config.put(section + "/Lextend/gateway", self.general.lextend.gateway)
@@ -282,9 +323,23 @@ class ConfigManager(object):
             self.config.put(section + "/Miniserver/ip", self.general.miniserver.ip)
             self.config.put(section + "/Miniserver/port", self.general.miniserver.port)
 
-            # self.config.put(section + "/Wifi/enable", str(self.general.wifi.enable))
-            self.config.put(section + "/Wifi/ssid", self.general.wifi.ssid)
-            self.config.put(section + "/Wifi/password", self.general.wifi.password)
+
+            # static
+            self.config.put(section + "/WiFi/Static/enable", str(self.general.wifi_static.enable))
+            self.config.put(section + "/WiFi/Static/ip", self.general.wifi_static.ip)
+            self.config.put(section + "/WiFi/Static/netmask", self.general.wifi_static.netmask)
+            self.config.put(section + "/WiFi/Static/gateway", self.general.wifi_static.gateway)
+            self.config.put(section + "/WiFi/Static/dns1", self.general.wifi_static.dns1)
+            self.config.put(section + "/WiFi/Static/dns2", self.general.wifi_static.dns2)
+            self.config.put(section + "/WiFi/Static/port", self.general.wifi_static.port)
+
+
+            self.config.put(section + "/WiFi/Static/ssid", self.general.wifi_static.ssid)
+            self.config.put(section + "/WiFi/Static/password", self.general.wifi_static.password)
+
+            # dhcp
+            self.config.put(section + "/WiFi/Dhcp/ssid", self.general.wifi_dhcp.ssid)
+            self.config.put(section + "/WiFi/Dhcp/password", self.general.wifi_dhcp.password)
 
             self.config.put(section + "/Admin/name", self.general.admin.name)
             self.config.put(section + "/Admin/password", self.general.admin.password)

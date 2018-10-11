@@ -20,13 +20,27 @@
     <ul data-role="listview" data-inset="true">
         <li class="ui-field-contain">
             <div data-role="collapsible" data-collapsed="false">
-                <h4>Lextend</h4>
+                <h4>Lextend Ethernet</h4>
                 <ul data-role="listview">
                     <li class="ui-field-contain">
                         <label for="1" class="select">Hostname</label>
                         <label id="hostname" class="select">{{hostname}}</label>
                     </li>
                     <li class="ui-field-contain">
+                        <label for="ethernet.enable">Enable Static</label>
+                    <div class="ui-grid-solo" id="">
+                        <div class="ui-block-a">
+                            <select name="ethernet.enable"
+                                    id="ethernet.enable" data-role="slider">
+                                <option id="off" value="off"
+                                    {% if not cfg.general.lextend.enable %}selected="selected"{% endif %}
+                                >Off</option>
+                                <option id="on" value="on"
+                                        {% if cfg.general.lextend.enable %}selected="selected"{% endif %}
+                                >On</option>
+                            </select>
+                        </div>
+                    </div>
                         <label for="1" class="select">IP</label>
                             <input type="text" id="lextend.ip" title="" name="lextend.ip"
                                    value="{{cfg.general.lextend.ip}}"/>
@@ -52,18 +66,62 @@
 
         <li class="ui-field-contain">
             <div data-role="collapsible" data-collapsed="false">
-
-                <h4>WiFi</h4>
+                <h4>Lextend WiFi</h4>
                 <ul data-role="listview">
                     <li class="ui-field-contain">
+                        <label for="wifi.enable">WiFi ON</label>
+                        <select name="wifi.enable"
+                                id="wifi.enable" data-role="slider">
+                            <option id="off" value="off"
+                                    {% if not cfg.general.lextend.wifi.enable %}selected="selected"{% endif %}
+                            >Off</option>
+                            <option id="on" value="on"
+                                    {% if cfg.general.lextend.wifi.enable %}selected="selected"{% endif %}
+                            >On</option>
+                        </select>
+                    </li>
+                    <li class="ui-field-contain">
+                        <label for="wifi_static.enable">Enable Static</label>
+                        <div class="ui-grid-solo" id="">
+                            <div class="ui-block-a">
+                                <select name="wifi_static.enable"
+                                        id="wifi_static.enable" data-role="slider">
+                                    <option id="off" value="off"
+                                            {% if not cfg.general.wifi_static.enable %}selected="selected"{% endif %}
+                                    >Off</option>
+                                    <option id="on" value="on"
+                                            {% if cfg.general.wifi_static.enable %}selected="selected"{% endif %}
+                                    >On</option>
+                                </select>
+                            </div>
+                        </div>
+                        <label for="1" class="select">IP</label>
+                            <input type="text" id="lextend.static.ip" title="" name="lextend.static.ip"
+                                   value="{{cfg.general.wifi_static.ip}}"/>
+                        <label for="2" class="select">Netmask</label>
+                            <input type="text" id="lextend.static.netmask" title="" name="lextend.static.netmask"
+                                   value="{{cfg.general.wifi_static.netmask}}"/>
+                        <label for="3" class="select">Default Gateway</label>
+                            <input type="text" id="lextend.static.gateway" title="" name="lextend.static.gateway"
+                                   value="{{cfg.general.wifi_static.gateway}}"/>
+                        <label for="4" class="select">DNS1</label>
+                            <input type="text" id="lextend.static.dns1" title="" name="lextend.static.dns1"
+                                   value="{{cfg.general.wifi_static.dns1}}"/>
+                        <label for="5" class="select">DNS2</label>
+                            <input type="text" id="lextend.static.dns2" title="" name="lextend.static.dns2"
+                                   value="{{cfg.general.wifi_static.dns2}}"/>
+                        <label for="6" class="select">Port</label>
+                            <input type="text" id="lextend.static.port" title="" name="lextend.static.port"
+                                   value="{{cfg.general.wifi_static.port}}"/>
+
                         <label for="1" class="select">SSID</label>
-                            <select title = "" name="wifi.ssid" id="wifi.ssid">
+                            <select title = "" name="lextend.dhcp.ssid" id="lextend.dhcp.ssid">
                                 {% if wifi_list!= None %}
                                     {% for ssid in wifi_list %}
                                         {% if ssid %}
-                                            self.general.wifi.ssid
+                                            self.general.wifi_dhcp.ssid
                                             <option value="{{ssid}}"
-                                                    {% if cfg.general.wifi.ssid == ssid %}
+                                                    {% if cfg.general.wifi_dhcp.ssid == ssid %}
                                                     selected="selected"
                                                     {% endif %}
                                             >{{ssid}}</option>
@@ -72,9 +130,10 @@
                                 {% endif %}
                             </select>
                         <label for="2" class="select">Password</label>
-                            <input type="password" id="2" name="wifi.password"
+                            <input type="password" id="lextend.dhcp.password" name="lextend.dhcp.password"
                                    value=""/>
                     </li>
+
                 </ul>
             </div>
         </li>

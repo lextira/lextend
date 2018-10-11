@@ -14,23 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Use an official Python runtime as a parent image
-FROM arm32v7/python:3.4-jessie
-FROM resin/rpi-raspbian:stretch
+# Use a prebuild image 
+FROM alcodex/lextend_baseimage
+
 # Set the working directory to /app
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
 copy  /rpi_manager /app
-RUN apt-get update
-RUN apt-get upgrade
-RUN apt-get install wireless-tools
-RUN apt-get install libxslt-dev
-RUN apt-get install libxml2
-RUN apt-get install python3-pip
-# Install any needed packages specified in requirements.txt
-RUN  pip3 install -r postinst
 
+RUN apt-get install -y net-tools
 # Run run_lextend_webfrontend.py when the container launches
 CMD ["python3","run_rpi_manager.py"]
 

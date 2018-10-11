@@ -231,96 +231,24 @@ def settings_general():
 
         if "Save" == action:
 
-            # enable_wifi = ""
-            # try:
-            #     enable_wifi = rf["wifi.enable"]
-            #     cfg.general.wifi.enable = True if "on" == enable_wifi else False
-            # except:
-            #     pass
-
             try:
-                ssid = rf["wifi.ssid"]
-                password = rf["wifi.password"]
-                if ssid == "":
-                    raise Exception()
-                cfg.general.wifi.ssid = ssid
-                if password == "":
-                    raise Exception()
-                cfg.general.wifi.password = password
-                change_ssid(ssid)
-                change_psk(password)
-                interfaces = os.listdir('/sys/class/net/')
-                winame = ""
-                for interface in interfaces:
-                    if "wlan" in interface:
-                        winame = interface
-                # change_wlan(winame)
-                require_reboot = True
+                ether_wifi = rf["wifi.enable"]
+                cfg.general.lextend.wifi.enable = True if "on" == ether_wifi else False
             except:
                 pass
 
             try:
-                value = str(rf["lextend.ip"])
-                new = ipaddress.ip_address(value)
-                if ipaddress.ip_address(cfg.general.lextend.ip) != new:
-                    cfg.general.lextend.ip = str(new)
-                    change_ip_address(new)
-                    require_reboot = True
+                enable_ether = rf["ethernet.enable"]
+                cfg.general.lextend.enable = True if "on" == enable_ether else False
             except:
                 pass
+
             try:
-                value = str(rf["lextend.netmask"])
-                new = ipaddress.ip_address(value)
-                if ipaddress.ip_address(cfg.general.lextend.netmask) != new:
-                    cfg.general.lextend.netmask = str(new)
-                    change_netmask(new)
-                    require_reboot = True
+                enable_wifi = rf["wifi_static.enable"]
+                cfg.general.wifi_static.enable = True if "on" == enable_wifi else False
             except:
                 pass
-            try:
-                value = str(rf["lextend.gateway"])
-                new = ipaddress.ip_address(value)
-                if ipaddress.ip_address(cfg.general.lextend.gateway) != new:
-                    cfg.general.lextend.gateway = str(new)
-                    change_gateway(new)
-                    require_reboot = True
-            except:
-                pass
-            try:
-                value = str(rf["lextend.dns1"])
-                value2 = str(rf["lextend.dns2"])
-                new = ipaddress.ip_address(value)
-                new2 = ipaddress.ip_address(value2)
-                if ipaddress.ip_address(cfg.general.lextend.dns1) != new \
-                        or ipaddress.ip_address(cfg.general.lextend.dns2) != new2:
-                    cfg.general.lextend.dns1 = str(new)
-                    cfg.general.lextend.dns2 = str(new2)
-                    change_dns("%s %s" % (new, new2))
-                    require_reboot = True
-            except:
-                pass
-            try:
-                value = int(rf["lextend.port"])
-                if value < 1 or value > 65535:
-                    raise Exception()
-                if value != cfg.general.lextend.port:
-                    require_reboot = True
-                cfg.general.lextend.port = value
-            except:
-                pass
-            try:
-                value = str(rf["miniserver.ip"])
-                new = ipaddress.ip_address(value)  # Validate ip address
-                cfg.general.miniserver.ip = str(new)
-            except:
-                pass
-            try:
-                value = int(rf["miniport.port"])
-                if value < 1 or value > 65535:
-                    raise Exception()
-                cfg.general.miniserver.port = value
-            except:
-                pass
+            cfg.save()
 
             try:
                 value = rf["admin.username"]
@@ -343,6 +271,146 @@ def settings_general():
                 cfg.general.admin.password = value
             except:
                 pass
+
+            if cfg.general.lextend.wifi.enable == True:
+                if cfg.general.wifi_static.enable == True:
+                    # static
+                    try:
+                        value = str(rf["lextend.static.ip"])
+                        new_ip_address = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.wifi_static.ip) != new_ip_address:
+                            cfg.general.wifi_static.ip = str(new_ip_address)
+
+                        value = str(rf["lextend.static.netmask"])
+                        new_netmask = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.wifi_static.netmask) != new_netmask:
+                            cfg.general.wifi_static.netmask = str(new_netmask)
+
+                        value = str(rf["lextend.static.gateway"])
+                        new_gateway = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.wifi_static.gateway) != new_gateway:
+                            cfg.general.wifi_static.gateway = str(new_gateway)
+
+                        value = str(rf["lextend.static.dns1"])
+                        value2 = str(rf["lextend.static.dns2"])
+                        new_dns = ipaddress.ip_address(value)
+                        new_dns2 = ipaddress.ip_address(value2)
+                        if ipaddress.ip_address(cfg.general.wifi_static.dns1) != new_dns \
+                                or ipaddress.ip_address(cfg.general.wifi_static.dns2) != new_dns2:
+                            cfg.general.wifi_static.dns1 = str(new_dns)
+                            cfg.general.wifi_static.dns2 = str(new_dns2)
+
+                        change_wifi_static(new_ip_address, new_netmask, new_gateway, new_dns, new_dns2)
+
+                        value = int(rf["lextend.static.port"])
+                        if value < 1 or value > 65535:
+                            raise Exception()
+                        if value != cfg.general.wifi_static.port:
+                            require_reboot = True
+                        cfg.general.wifi_static.port = value
+
+                        require_reboot = True
+                    except:
+                        pass
+
+                    try:
+                        ssid = rf["lextend.dhcp.ssid"]
+                        password = rf["lextend.dhcp.password"]
+                        if ssid == "":
+                            raise Exception()
+                        cfg.general.wifi_dhcp.ssid = ssid
+                        if password == "":
+                            raise Exception()
+                        cfg.general.wifi_dhcp.password = password
+
+                        change_wpa_supplicant(ssid, password)
+
+                        interfaces = os.listdir('/sys/class/net/')
+                        winame = ""
+                        for interface in interfaces:
+                            if "wlan" in interface:
+                                winame = interface
+
+                        require_reboot = True
+                    except:
+                        pass
+                elif cfg.general.wifi_static.enable == False:
+                    # dhcp
+                    try:
+                        change_wifi_dhcp()
+
+                        ssid = rf["lextend.dhcp.ssid"]
+                        password = rf["lextend.dhcp.password"]
+                        if ssid == "":
+                            raise Exception()
+                        cfg.general.wifi_dhcp.ssid = ssid
+                        if password == "":
+                            raise Exception()
+                        cfg.general.wifi_dhcp.password = password
+                        change_wpa_supplicant(ssid, password)
+
+                        interfaces = os.listdir('/sys/class/net/')
+                        winame = ""
+                        for interface in interfaces:
+                            if "wlan" in interface:
+                                winame = interface
+                        # change_wlan(winame)
+                        require_reboot = True
+                    except:
+                        pass
+
+            elif cfg.general.lextend.wifi.enable == False:
+                if cfg.general.lextend.enable == True:
+                    try:
+                        value = str(rf["lextend.ip"])
+                        new_ip_address = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.lextend.ip) != new_ip_address:
+                            cfg.general.lextend.ip = str(new_ip_address)
+
+                        value = str(rf["lextend.netmask"])
+                        new_netmask = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.lextend.netmask) != new_netmask:
+                            cfg.general.lextend.netmask = str(new_netmask)
+
+                        value = str(rf["lextend.gateway"])
+                        new_gateway = ipaddress.ip_address(value)
+                        if ipaddress.ip_address(cfg.general.lextend.gateway) != new_gateway:
+                            cfg.general.lextend.gateway = str(new_gateway)
+
+                        value = str(rf["lextend.dns1"])
+                        value2 = str(rf["lextend.dns2"])
+                        new_dns = ipaddress.ip_address(value)
+                        new_dns2 = ipaddress.ip_address(value2)
+                        if ipaddress.ip_address(cfg.general.lextend.dns1) != new_dns \
+                                or ipaddress.ip_address(cfg.general.lextend.dns2) != new_dns2:
+                            cfg.general.lextend.dns1 = str(new_dns)
+                            cfg.general.lextend.dns2 = str(new_dns2)
+
+                        change_ethernet_static(new_ip_address, new_netmask, new_gateway, new_dns, new_dns2)
+
+                        value = int(rf["lextend.port"])
+                        if value < 1 or value > 65535:
+                            raise Exception()
+                        if value != cfg.general.lextend.port:
+                            require_reboot = True
+                        cfg.general.lextend.port = value
+
+                        value = str(rf["miniserver.ip"])
+                        new = ipaddress.ip_address(value)  # Validate ip address
+                        cfg.general.miniserver.ip = str(new)
+
+                        value = int(rf["miniport.port"])
+                        if value < 1 or value > 65535:
+                            raise Exception()
+                        cfg.general.miniserver.port = value
+
+                        require_reboot = True
+                    except:
+                        pass
+
+                elif cfg.general.lextend.enable == False:
+                    change_ethernet_dhcp()
+                    require_reboot = True
 
             cfg.save()
 
@@ -374,6 +442,7 @@ def settings_general():
         if not commandExists("ifconfig"):
             logging.error("You will need the command 'ifconfig' to continue.")
             # quit()
+        os.system("ifconfig wlan0 up")
         interfaces = os.listdir('/sys/class/net/')
         winame = ""
         for interface in interfaces:
@@ -403,6 +472,7 @@ def settings_general():
 
     return render_template("settings/general.html", cfg=cfg, require_reboot=require_reboot,
                            hostname=socket.gethostname(), wifi_list=wifi_list)
+
 
 
 @app.route("/signin", methods=['GET', 'POST'])
