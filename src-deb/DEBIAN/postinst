@@ -1,0 +1,105 @@
+#!/bin/bash
+
+echo "Installing python dependencies using pip."
+#pip uninstall pam
+#cd /usr/local/lib/python2.7/dist-packages/
+#pip uninstall soco
+#if [ ! -d /usr/local/lib/python2.7/dist-packages/soco ]
+#then
+pip install                    \
+            pyinotify          \
+            Flask              \
+            Flask-cors         \
+            requests           \
+            pam                \
+            lxml               \
+            rpyc==3.3.0        \
+            netifaces          \
+            ipaddress          \
+            xmltodict          \
+            soco==0.12         \
+            retrying      
+	               
+#--ignore-installed \
+#else
+#pip install                    \
+#            pyinotify   \
+#            Flask      \
+#            Flask-cors         \
+#            requests   \
+#            pam        \
+#            rpyc==3.3.0        \
+#            netifaces \
+#            ipaddress          \
+#            xmltodict          \
+#            soco        \
+#            retrying	       \
+#	    lxml         
+#--ignore-installed \
+#fi
+
+# Set hostname
+#echo "Setting hostname to Lextend-MAC."
+hwaddr=`cat /sys/class/net/eth0/address | sed 's/://g'`
+hwaddr_lo=${hwaddr:6}
+hname=lex-$hwaddr_lo
+hostname $hname
+echo $hname > /etc/hostname
+
+# Restart avahi in case hostname has been changed.
+echo "Restarting Avahi service."
+service avahi-daemon restart
+
+echo "Updating lextend service."
+update-rc.d lextend.sh defaults
+
+# These should be started first to create config folder
+service lextend.sh stop
+service lextend.sh start
+
+echo "Setting up folders"
+mkdir -p /root/.config/lextend/sounds
+if [ -d /root/.config/lextend/sounds/SGW_CustomSounds ];
+then
+	rm -rf /root/.config/lextend/sounds/SGW_CustomSounds
+fi
+if [ -d /root/.config/lextend/sounds/SGW_Commercials ];
+then
+        rm -rf /root/.config/lextend/sounds/SGW_Commercials
+fi
+if [ -d /root/.config/lextend/smb/SGW_Commercials ];
+then
+        rm -rf /root/.config/lextend/smb/SGW_Commercials
+fi
+
+if [ -d /root/.config/lextend/smb ];
+then
+        rm -rf /root/.config/lextend/smb
+fi
+
+mkdir -p /root/.config/lextend/sounds/smb/SGW_CustomSounds
+mkdir -p /root/.config/lextend/sounds/smb/SGW_Commercials
+chmod a+rx /root
+chmod a+rx /root/.config
+chmod a+rx /root/.config/lextend
+chmod a+rx -R /root/.config/lextend/sounds
+
+echo "Setting up samba shares."
+groupadd LexAdms
+useradd LexAdm
+gpasswd -a LexAdm LexAdms
+printf "pass\npass\n" | smbpasswd -a -s LexAdm
+
+chgrp -R LexAdms /root/.config/lextend/sounds/smb
+chmod a+rx -R /root/.config/lextend/sounds/smb
+chmod g+w -R /root/.config/lextend/sounds/smb
+
+if [ -f /root/.config/lextend/sounds/defaults/9-Store_Door_Chime.mp3 ];
+then
+	rm /root/.config/lextend/sounds/defaults/9-Store_Door_Chime.mp3
+fi
+
+# Restart samba server after updating config file
+# TODO: rename to smbd
+service samba restart
+service avahi-daemon restart
