@@ -131,7 +131,7 @@ class ConfigManager(object):
             tmp = self.config.get(section + "/Lextend/WiFi/enable", "False")
             self.general.lextend.wifi.enable = True if "True" in tmp else False
 
-            tmp1 = self.config.get(section + "/Lextend/Ethernet/Static/enable", "False")
+            tmp1 = self.config.get(section + "/Lextend/Ethernet/Static/enable", "True")
             self.general.lextend.enable = True if "True" in tmp1 else False
 
             self.general.lextend.ip = self.config.get(section + "/Lextend/ip",
