@@ -174,15 +174,15 @@ class ConfigManager(object):
                                                         "5051")
 
             self.general.wifi_static.ssid = self.config.get(section + "/WiFi/Static/ssid",
-                                                               "alcodex")
+                                                               "Admin")
             self.general.wifi_static.password = self.config.get(section + "/WiFi/Static/password",
-                                                                   "alcodex")
+                                                                   "admin")
 
             # dhcp
             self.general.wifi_dhcp.ssid = self.config.get(section + "/WiFi/Dhcp/ssid",
-                                                               "alcodex1")
+                                                               "Admin1")
             self.general.wifi_dhcp.password = self.config.get(section + "/WiFi/Dhcp/password",
-                                                                   "alcodex1")
+                                                                   "admin1")
             tmp3 = self.config.get(section + "/Sheduled/Reboot/enable", "False")
             self.general.sheduled_reboot.enable= True if "True" in tmp3 else False
 
