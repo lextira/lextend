@@ -98,17 +98,26 @@ def settings_sonos_doorbell():
         remote_sonosPoolManager = conn.root.get_sonosPoolManager()
         remote_sonosPoolManager.discover()
     except:
+        PID = subprocess.check_output("ps aux|grep lextend_engine | awk '{print $2}'", shell=True)
+        pid = PID.split("\n")[0:3]
+        try:
+            pid_int = map(int,pid)
+            for i in pid_int:
+               cmd = "sudo kill -9 %s"%(i)
+               os.system(cmd)
+        except:
+            pass
         os.system("sudo /usr/bin/lextend_engine &")
         logger.error("Could not connect to RPC server.")
     
-    remote_sonosPoolManager = None
-    try:
-        conn = rpyc.connect(RPC_IP, RPC_PORT)
-        remote_sonosPoolManager = conn.root.get_sonosPoolManager()
-        remote_sonosPoolManager.discover()
-    except:
-        os.system("sudo /usr/bin/lextend_engine &")
-        logger.error("Could not connect to RPC server.")    
+    # remote_sonosPoolManager = None
+    # try:
+    #     conn = rpyc.connect(RPC_IP, RPC_PORT)
+    #     remote_sonosPoolManager = conn.root.get_sonosPoolManager()
+    #     remote_sonosPoolManager.discover()
+    # except:
+    #     os.system("sudo /usr/bin/lextend_engine &")
+    #     logger.error("Could not connect to RPC server.")    
 
     custom_files = os.listdir(SGW_CUSTOMSOUNDS)
     custom_files.sort()
