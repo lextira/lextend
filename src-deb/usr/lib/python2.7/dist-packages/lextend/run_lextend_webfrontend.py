@@ -98,6 +98,8 @@ def settings_sonos_doorbell():
         remote_sonosPoolManager = conn.root.get_sonosPoolManager()
         remote_sonosPoolManager.discover()
     except:
+        #When multiple rpyc error occurs, the existing lextend engine process has to be killed before starting a new instance
+        
         PID = subprocess.check_output("ps aux|grep lextend_engine | awk '{print $2}'", shell=True)
         pid = PID.split("\n")[0:3]
         try:
