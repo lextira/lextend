@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<select title="" id="logfile_select">
+    <option value="engine_log">Lextend Engine Log</option>
+    <option value="webinterface_log">Lextend Webinterface Log</option>
+    <option value="flic_log">Flic Listener Log</option>
+    <option value="rpi_log">Rpi Manager Log</option>
+</select>
+
+<label>
+    <input type="checkbox" id="autoscroll">Auto-scroll
+</label>
+
+<textarea title="" id="output"
+          data-autogrow="false"
+          style="white-space: pre;height:500px;font-family:monospace;">
+</textarea>
+
+<a href="{{ url_for('debug_download_logs') }}" target="_blank" class="ui-btn ui-corner-all ui-shadow ui-btn-a" download>Download logs</a>
+
+<script>
+    var logfile_select = document.getElementById('logfile_select');
+    var output = document.getElementById('output');
+    var autoscroll = document.getElementById('autoscroll');
+
+    var xhr0 = new XMLHttpRequest();
+    xhr0.open('GET', '{{ url_for('debug_logs_stream') + "?id=0" }}');
+    xhr0.send();
+
+    var xhr1 = new XMLHttpRequest();
+    xhr1.open('GET', '{{ url_for('debug_logs_stream') + "?id=1" }}');
+    xhr1.send();
+
+    var xhr2 = new XMLHttpRequest();
+    xhr2.open('GET', '{{ url_for('debug_logs_stream') + "?id=2" }}');
+    xhr2.send();
+
+    var xhr3 = new XMLHttpRequest();
+    xhr3.open('GET', '{{ url_for('debug_logs_stream') + "?id=3" }}');
+    xhr3.send();
+
+    setInterval(function()
+    {
+      if (logfile_select.value === "engine_log")
+      {
+          output.textContent = xhr0.responseText;
+      }
+      else if (logfile_select.value === "webinterface_log")
+      {
+          output.textContent = xhr1.responseText;
+      }
+      else if (logfile_select.value === "flic_log")
+      {
+          output.textContent = xhr2.responseText;
+      }
+      else if (logfile_select.value === "rpi_log")
+      {
+          output.textContent = xhr3.responseText;
+      }
+
+
+      if (autoscroll.checked)
+      {
+        output.scrollTop = output.scrollHeight; // autoscroll down
+      }
+    }, 1000);
+
+</script>
+
+{% endblock %}

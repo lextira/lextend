@@ -1,0 +1,457 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+    position:fixed;
+    top:0;
+    left:0;
+    background:gray;
+    opacity:0.8;
+    z-index:998;
+    height:100%;
+    width:100%;
+    padding-top: 100px;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    background-color: gray;
+    margin: auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 400px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+@keyframes animatetop {
+    from {top:-300px; opacity:0}
+    to {top:0; opacity:1}
+}
+
+/* The Close Button */
+.close {
+    color: black;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-header {
+    text-align: center;
+    padding: 2px 16px;
+    background-color: #f3f3f3;
+    color: black;
+}
+
+.modal-body {
+    padding: 20px 52px;
+    background-color: #1b1b1b;
+    color: white;
+}
+
+</style>
+<form action="#" name="settings_form" id="settings_form"
+      method="post" enctype="multipart/form-data" data-ajax="false">
+
+    <ul data-role="listview" data-inset="true">
+        <li class="ui-field-contain">
+            <h1 style="font-size:1.4em;">GPIO</h1>
+        </li>
+        <li class="ui-field-contain">
+          {% for i in range(6) %}
+            <ul data-role="listview">
+              <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                <label for="{{i}}r" class="select">GPIO {{i + 1}} Rising Edge UDP payload:</label>
+                <fieldset class="ui-grid-a">
+                  <div class="ui-block-a">
+                        <input type="text" id="{{i}}r" name="udp_payload_rising_{{i}}"
+                               value="{{cfg.gpio.udp_payload_rising[i]}}"/>
+                  </div>
+                  <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/io_test",
+                                         type: "get",
+                                         data:{io_id:{{i}}, rising:true},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  2000
+                                 });
+                              '
+                             >
+                  </div>
+                </fieldset>
+                <label for="{{i}}f" class="select">GPIO {{i + 1}} Falling Edge UDP payload:</label>
+                <fieldset class="ui-grid-a">
+                  <div class="ui-block-a">
+                        <input type="text" id="{{i}}f" name="udp_payload_falling_{{i}}"
+                               value="{{cfg.gpio.udp_payload_falling[i]}}"/>
+                  </div>
+                  <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/io_test",
+                                         type: "get",
+                                         data:{io_id:{{i}}, rising:false},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  2000
+                                 });
+                              '
+                             >
+                  </div>
+                </fieldset>
+              </li>
+            </ul>
+          {% endfor %}
+        </li>
+        <li class="ui-field-contain">
+            <h1 style="font-size:1.4em;">FLIC</h1>
+        </li>
+
+        <li class="ui-field-contain">
+            <div data-role="collapsible" data-collapsed="false">
+                <h4>FLIC button discovery</h4>
+                {% if remote_flic_pool_manager != None %}
+
+                <div class="ui-grid-solo">
+                    <div class="ui-block-a">
+                        <button id="myBtn">Scan FLIC</button>
+                    </div>
+                </div>
+                <ul data-role="listview">
+                    {% if remote_flic_pool_manager.my_bd_addr %}
+                        <li class="ui-field-contain">
+                            <label class="select">Lextend BD ADDR</label>
+                            <label>{{ remote_flic_pool_manager.my_bd_addr }}</label>
+                        </li>
+                    {% endif %}
+                    {% for i in range(n) %}
+                    <li class="ui-field-contain">
+                        <div data-role="collapsible" data-collapsed="false">
+                            <h4>FLIC {{ i + 1  }}</h4>
+                            <ul data-role="listview">
+                                <li class="ui-field-contain">
+                                    <label class="select">Name</label>
+                                    <label>{{ remote_flic_pool_manager.flic_name[i] }}</label>
+                                </li>
+                                <li class="ui-field-contain">
+                                    <label class="select">BD ADDR</label>
+                                    <label>{{ remote_flic_pool_manager.bd_addr_button[i] }}</label>
+                                </li>
+                                <li class="ui-field-contain">
+                                    <label class="select">Status</label>
+                                    <label>{{ remote_flic_pool_manager.button_status[
+                                    remote_flic_pool_manager.bd_addr_button[i]] }}</label>
+                                </li>
+                                <li class="ui-field-contain">
+
+                                    <ul data-role="listview">
+                                        <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                                            <label for="{{i}}c" class="select">Click</label>
+                                                <fieldset class="ui-grid-a">
+                                                    <div class="ui-block-a">
+                                                        <input type="text" id="{{i}}c" name="flic_{{i}}_click"
+                                                               value="{{cfg.flic.click[i]}}"/>
+                                                    </div>
+                                                    <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/flic_test",
+                                         type: "get",
+                                         data:{no:{{i}}, click:"click"},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  5000
+                                 });
+                              '
+                             >
+                  </div>
+                                                </fieldset>
+                                        </li>
+                                    </ul>
+                                    <ul data-role="listview">
+                                        <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                                            <label for="{{i}}d" class="select">Double Click</label>
+                                                <fieldset class="ui-grid-a">
+                                                    <div class="ui-block-a">
+                                                        <input type="text" id="{{i}}d" name="flic_{{i}}_double_click"
+                                                                value="{{cfg.flic.double_click[i]}}"/>
+                                                    </div>
+                                                    <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/flic_test",
+                                         type: "get",
+                                         data:{no:{{i}}, click:"double"},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  5000
+                                 });
+                              '
+                             >
+                  </div>
+                                                </fieldset>
+                                        </li>
+                                    </ul>
+                                    <ul data-role="listview">
+                                        <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                                            <label for="{{i}}h" class="select">Hold</label>
+                                                <fieldset class="ui-grid-a">
+                                                    <div class="ui-block-a">
+                                                        <input type="text" id="{{i}}h" name="flic_{{i}}_hold"
+                                                                value="{{cfg.flic.hold[i]}}"/>
+                                                    </div>
+                                                    <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/flic_test",
+                                         type: "get",
+                                         data:{no:{{i}}, click:"hold"},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  5000
+                                 });
+                              '
+                             >
+                  </div>
+                                                </fieldset>
+                                        </li>
+                                    </ul>
+
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div>
+                    <strong>
+                        <span style="color:#ff2000;">
+                            An error occurred when connecting to the Flicd server.
+                            <br>
+                            Please check that Flic Service is running.
+                        </span>
+                    </strong>
+                </div>
+                {% endif %}
+            </div>
+        </li>
+    </ul>
+
+    <div id="myModal1" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>FLIC scan</h2>
+            </div>
+            <div class="modal-body">
+                <p>This will search for new FLIC buttons.</p>
+                <p>Make sure FLIC is disconnected from any other devices such as a smartphone.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal2" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>FLIC scan</h2>
+            </div>
+            <div class="modal-body">
+                <p>Didn't find any private button.</p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal3" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>FLIC scan</h2>
+            </div>
+            <div class="modal-body">
+                <p>Found a private button. Please hold it down for 7 seconds to make it public.</p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal4" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>FLIC scan</h2>
+            </div>
+            <div class="modal-body">
+                <p>Button successfully scanned. Press the button again to add.</p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModal5" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>FLIC scan</h2>
+            </div>
+            <div class="modal-body">
+                <p>Button not scanned. Try again...</p>
+                <p></p>
+            </div>
+        </div>
+    </div>
+
+    <ul data-role="listview" data-inset="true">
+        <li class="ui-body ui-body-a">
+          <fieldset class="ui-grid-a">
+            <div class="ui-block-b">
+              <input id="cancel" type="button"
+                     name="action" value="Cancel" data-theme="a"
+                     onClick="window.location.href='/';">
+            </div>
+            <div class="ui-block-b">
+              <input id="save" type="submit"
+                     name="action" value="Save" data-theme="a">
+            </div>
+          </fieldset>
+        </li>
+    </ul>
+
+</form>
+<script>
+// Get the modal
+var modal1 = document.getElementById('myModal1');
+var modal2 = document.getElementById('myModal2');
+var modal3 = document.getElementById('myModal3');
+var modal4 = document.getElementById('myModal4');
+var modal5 = document.getElementById('myModal5');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span1 = document.getElementsByClassName("close")[0];
+var span2 = document.getElementsByClassName("close")[1];
+var span3 = document.getElementsByClassName("close")[2];
+var span4 = document.getElementsByClassName("close")[3];
+var span5 = document.getElementsByClassName("close")[4];
+
+// When the user clicks the button, open the modal
+btn.onclick = function() {
+    modal1.style.display = "block";
+
+    var refreshTimer1 = 0;
+    var refreshTimer2 = 0;
+    refreshTimer1 = setInterval(function(){
+        $.ajax({url: "/flic_test",
+            type: "get",
+            data:{action:"Discover"},
+            dataType: "json",
+            success: function (data) {
+            console.log(data);
+            if(data.flic_status === 1) {
+                modal1.style.display = "none";
+                modal3.style.display = "block";
+                clearInterval(refreshTimer1);
+                refreshTimer2 = setInterval(function () {
+                    $.ajax({
+                        type: "get",
+                        url: "/flic_test",
+                        async: false,
+                        data:{action:"Discover"},
+                        dataType: "json",
+                        success: function (data) {
+                            console.log(data);
+                            if(data.flic_status === 2){
+                                clearInterval(refreshTimer2);
+                                modal3.style.display = "none";
+                                modal4.style.display = "block";
+                            }
+                            else{
+                                modal3.style.display = "none";
+                                modal5.style.display = "block";
+                                clearInterval(refreshTimer2);
+                            }
+                        }
+                    });
+                },15000);
+            }
+            else{
+                modal1.style.display = "none";
+                modal2.style.display = "block";
+                clearInterval(refreshTimer1);
+            }
+        }
+        });}, 10000);
+    return false;
+};
+
+// When the user clicks on <span> (x), close the modal
+span1.onclick = function() {
+    modal1.style.display = "none";
+    location.reload();
+};
+span2.onclick = function() {
+    modal2.style.display = "none";
+    location.reload();
+};
+span3.onclick = function() {
+    modal3.style.display = "none";
+    location.reload();
+};
+span4.onclick = function() {
+    modal4.style.display = "none";
+    location.reload();
+};
+span5.onclick = function() {
+    modal5.style.display = "none";
+    location.reload();
+};
+
+// When the user clicks anywhere outside of the modal, close it
+{#window.onclick = function(event) {#}
+{#    if (event.target === modal) {#}
+{#        modal.style.display = "none";#}
+{#    }#}
+//}
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div>
+
+    <div class="left-pannel">
+        <div>
+            <strong>Thanks for using Lextend.</strong>
+            <p>For questions or support, contact us:<br><br>
+            info@lextira.ch<br>
+            </p>
+        </div>
+    </div>
+
+    <div style="-webkit-filter:drop-shadow(2px 2px 2px rgba(0,0,0,.8));">
+      <div style="background:#ececec;border-radius:8px;overflow:auto;padding:22px;min-width:14em;">
+        {% with %}
+            {% set label1="RPi" %}
+            {% set label2="Settings" %}
+            {% set image="/static/custom_images/settings_b.png" %}
+            {% set url="/settings/general" %}
+            {% include "service_button.html" %}
+        {% endwith %}
+
+        {% with %}
+            {% set label1="RPi" %}
+            {% set label2="External IO" %}
+            {% set image="/static/custom_images/input_b.png" %}
+            {% set url="/settings/io" %}
+            {% include "service_button.html" %}
+        {% endwith %}
+
+        {% with %}
+            {% set label1="Lextend" %}
+            {% set label2="Settings" %}
+            {% set image="/static/custom_images/lextend_settings_b.png" %}
+            {% set url="/lextend_settings" %}
+            {% include "service_button.html" %}
+        {% endwith %}
+
+      </div>
+    </div>
+</div>
+
+{% endblock %}
