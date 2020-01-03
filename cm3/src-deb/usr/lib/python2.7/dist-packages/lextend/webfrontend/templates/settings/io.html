@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<form action="#" name="settings_form" id="settings_form"
+      method="post" enctype="multipart/form-data" data-ajax="false">
+
+    <ul data-role="listview" data-inset="true">
+        <li class="ui-field-contain">
+          {% for i in range(6) %}
+            <ul data-role="listview">
+              <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                <label for="{{i}}r" class="select">GPIO {{i + 1}} Rising Edge UDP payload:</label>
+                <fieldset class="ui-grid-a">
+                  <div class="ui-block-a">
+                        <input type="text" id="{{i}}r" name="udp_payload_rising_{{i}}"
+                               value="{{cfg.gpio.udp_payload_rising[i]}}"/>
+                  </div>
+                  <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/io_test",
+                                         type: "get",
+                                         data:{io_id:{{i}}, rising:true},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  2000
+                                 });
+                              '
+                             >
+                  </div>
+                </fieldset>
+                <label for="{{i}}f" class="select">GPIO {{i + 1}} Falling Edge UDP payload:</label>
+                <fieldset class="ui-grid-a">
+                  <div class="ui-block-a">
+                        <input type="text" id="{{i}}f" name="udp_payload_falling_{{i}}"
+                               value="{{cfg.gpio.udp_payload_falling[i]}}"/>
+                  </div>
+                  <div class="ui-block-b">
+                        <input type="button"
+                               name="action" value="Trigger" data-theme="a"
+                              onClick='
+                                 $.ajax({url: "/io_test",
+                                         type: "get",
+                                         data:{io_id:{{i}}, rising:false},
+                                         success: function (data) { },
+                                         complete: function () {
+                                   },
+                                 timeout:  2000
+                                 });
+                              '
+                             >
+                  </div>
+                </fieldset>
+              </li>
+            </ul>
+          {% endfor %}
+        </li>
+
+        <li class="ui-body ui-body-a">
+          <fieldset class="ui-grid-a">
+            <div class="ui-block-b">
+              <input type="button"
+                     name="action" value="Cancel" data-theme="a"
+                     onClick="window.location.href='/';">
+            </div>
+            <div class="ui-block-b">
+              <input type="submit"
+                     name="action" value="Save" data-theme="a">
+            </div>
+          </fieldset>
+        </li>
+    </ul>
+
+</form>
+
+{% endblock %}
+

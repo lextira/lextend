@@ -1,0 +1,4 @@
+[console_scripts]
+lextend_engine = lextend.run_lextend_engine:main
+lextend_webfrontend = lextend.run_lextend_webfrontend:main
+

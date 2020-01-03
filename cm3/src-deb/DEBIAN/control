@@ -1,0 +1,9 @@
+Package: lextend
+Version: 7.7
+Section: base
+Priority: Optional
+Architecture: all
+Installed-Size: 2M
+Depends: python, python-pip, samba, python-dev, python-smbus, python-lxml, avahi-daemon
+Maintainer: TODO <TODO@TODO.com>
+Description: lextend. Install me !

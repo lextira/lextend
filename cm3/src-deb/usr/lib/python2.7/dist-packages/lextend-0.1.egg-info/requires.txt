@@ -1,0 +1,5 @@
+Flask>=0.8
+requests>=2.3.0
+pyinotify>=0.9.4
+pam>=0.1.4
+rpyc>=3.3.0
