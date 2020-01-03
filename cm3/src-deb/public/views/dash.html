@@ -1,0 +1,92 @@
+<style type="text/css">
+    .spanAQIGood
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #00b050;
+    }
+
+    .spanAQISatisfactory
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #92d050;
+    }
+
+    .spanAQIModerate
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ffff00;
+    }
+
+    .spanAQIPoor
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ffc000;
+    }
+
+    .spanAQIVeryPoor
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ff0000;
+    }
+
+    .spanAQISevere
+    {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #c00000;
+    }
+
+    .map-wrapper
+    {
+        position: relative;
+        height: calc(100vh - 4em - 68px);
+    }
+
+    .angular-google-map-container
+    {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+</style>
+
+<script type="text/javascript">
+    jQuery(function ($) {
+        $(".tile").height($("#tile1").width());
+        $(".carousel").height($("#tile1").width());
+        $(".item").height($("#tile1").width());
+
+        $(window).on('resize', function () {
+            if (this.resizeTO) {
+                clearTimeout(this.resizeTO);
+            }
+            this.resizeTO = setTimeout(function () {
+                $(this).trigger('resizeEnd');
+            }, 10);
+        });
+
+        $(window).on('resizeEnd', function () {
+            $(".tile").height($("#tile1").width());
+            $(".carousel").height($("#tile1").width());
+            $(".item").height($("#tile1").width());
+        });
+    });
+</script>
+
+<div class="container-fluid" style="margin-left: 0px; margin-right: 0px">
+    <div id="pollutionMap" class="panel panel-primary" style="margin-top: 5px; font-size: 20px">
+        <div class="panel-heading">Pollution Map</div>
+        <div class="panel-body map-wrapper">
+            <ui-gmap-google-map center="map.center" draggable="true" control="map.control" zoom="map.zoom">
+                        <ui-gmap-marker ng-repeat="m in map.markers" coords="m.coords" icon="m.icon" idkey="m.id" click="deviceSelected(m)"></ui-gmap-marker>
+                    </ui-gmap-google-map>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,667 @@
+<style>
+
+    table {
+    border:1px solid #CCC;
+    border-collapse:collapse;
+    }
+
+
+    .table1 td, .table th {
+    }
+
+
+    thead, tbody, tr, td, th {
+        display: block;
+        border: none !important; 
+
+    }
+
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 30px;
+            /*text-align: left;*/
+        }
+
+    tbody {
+        height: auto;
+        overflow-y: auto;
+    }
+
+    thead {
+        /* fallback */
+    }
+
+
+        tbody td, thead th {
+            width: 19.2%;
+            float: left;
+        }
+
+    .active_row {
+        border: 1px solid !important;
+        color:darkblue;
+        
+        
+    }
+
+    .angular-google-map-container {
+        height: 400px;
+        width: auto;
+    }
+
+    .chartAreaWrapper {
+        width: 600px;
+        overflow-x: scroll;
+    }
+
+    /* CSS REQUIRED */
+.state-icon {
+    left: -5px;
+}
+.list-group-item-primary {
+    color: rgb(255, 255, 255);
+    background-color: rgb(66, 139, 202);
+}
+
+/* DEMO ONLY - REMOVES UNWANTED MARGIN */
+.well .list-group {
+    margin-bottom: 0px;
+}
+
+</style>
+<script>
+  
+</script>
+<div class="container-fluid" style="margin-left:5px;margin-right:5px;margin-top:3px">
+
+    <div class="row">
+        <div class="panel panel-default" style="border-color:darkgray;background-color:white">
+            <div class="panel-heading" style="font-size:20px">Live Data</div>
+            <div class="panel-body">
+                <div class="row">
+                                      
+                </div>
+               
+                <div class="row">
+                   
+                    
+                    <div class="row">
+                       
+                        <div class="col-sm-6" style="height:10%">
+                            <div class="pull-left">
+                                <label style="font-weight:normal;margin-left:15px">Select a device in the table to get the live data</label>
+                            </div>
+                            <div style="width:20%;margin-top:15px;margin-bottom:0px;height:10%" class="pull-right" ng-show="isDeviceLoadingOngoing">
+                                <div class="progress" style="height:5px">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{getDeviceTableLoadedPercent()}}"
+                                         aria-valuemin="0" aria-valuemax="100" style="width:{{getDeviceTableLoadedPercent()}}%;height:5px">
+                                        70%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-7">
+                         
+                        <!--<div style="width:20%;margin-top:5px" class="pull-right" ng-show="isDeviceLoadingOngoing">
+                            <div class="progress" style="height:5px">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="{{getDeviceTableLoadedPercent()}}"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:{{getDeviceTableLoadedPercent()}}%;height:5px">
+                                    70%
+                                </div>
+                            </div>
+                        </div>-->
+                        <table class="table table-striped" style="height:400px">
+                            <thead style="background-color:#666666;color:white;font-size:16px;height:40px">
+                                <tr>
+                                    <th style="width:15%;">Device Id</th>
+                                    <th style="width:10%;">Family</th>
+                                    <th style="width:15%;">Sub Type</th>
+                                    <th style="width:20%;">City</th>
+                                    <th style="width:20%;">Landmark</th>
+                                    <th style="width:15%;">Customer</th>
+                                    <th style="width:5%"></th>
+                                </tr>
+                            </thead>
+                            <tbody style="height:360px;">
+                                <tr data-ng-repeat="x in devices" data-ng-click="tableSelectItemDevice($index,x)" ng-class="{active_row:$index==selectedRow}">
+                                    
+                                    <td style="width:15%;overflow-wrap:break-word">{{ x.deviceId }}</td>
+                                    <td style="width:10%;overflow-wrap:break-word" >{{ x.devFamily }}</td>
+                                    <td style="width:15%;overflow-wrap:break-word">{{ getDeviceSubTypeString(x.subType) }}</td>
+                                    <td style="width:20%;overflow-wrap:break-word">{{ x.city }}</td>
+                                    <td style="width:20%;overflow-wrap:break-word">{{ x.tag.location.landMark }}</td>
+                                    <td style="width:15%;overflow-wrap:break-word">{{ x.customerName }}</td>
+                                    <td style="width:5%;text-align:center" ng-show="x.liveStatus!=1"><img width="15" height="15"  ng-src="/images/yellow_st.png"/> </td>
+                                    <td style="width:5%;text-align:center" ng-show="x.liveStatus==1"><img width="15" height="15" ng-src="/images/green_st.png" /> </td>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-sm-5">
+                        <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true">
+                            <ui-gmap-marker ng-repeat="m in map.markers" coords="m.coords" icon="m.icon" idkey="m.id"></ui-gmap-marker>
+                        </ui-gmap-google-map>
+                    </div>
+                </div>
+                <p></p>
+
+
+                <!--<div class="row">
+                    <div class="panel panel-default" >
+                        <div class="panel-heading" style="font-size:20px">Live Data</div>
+                    </div>
+                </div>-->
+
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" data-target="#collapse2">
+                                    <span class="glyphicon glyphicon-minus"></span>Raw Data
+                                </a>
+                                <div class="pull-right">
+                                    <button class="refresher">Refresh table</button>
+                                 <script type="text/javascript">
+                                    $(document).ready(function () {
+                                        $(document).on('click', '.refresher', function () {
+                                            $.ajax({
+                                                url: 'ajax.php',
+                                                method: get,
+                                                dataType: 'json',
+                                                success: function(response) {
+                                                    $('#table-to-refresh').html(response);
+                                                }
+                                            });
+                                        });
+                                    });
+                                    </script>
+                                </div>
+                            </h1>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <!--<div>
+                                        <label class="pull-left" style="margin-left:20px;margin-top:5px ;font-weight:normal;vertical-align:middle">Select number of samples</label>
+
+                                        <div class="pull-left" style="margin-left:10px;">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    1 Day
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(1)">1 Day</a></li>
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(7)">1 Week</a></li>
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(30)">1 Month</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>-->
+                                    <div>
+                                        
+                                        <div class="pull-left" style="margin-right:5px;margin-left:20px;">
+                                            <label style="font-weight:normal;margin-left:0px">Select Date to see data from that date <input type="date" datetime-picker ng-model="dateLiveEnd" ng-change="liveEndDateChange()" /></label>
+                                            <!--<label style="font-weight:normal;margin-left:0px">End Date <input type="date" datetime-picker ng-model="dateLiveEnd" ng-change="liveEndDateChange()"/></label>-->
+                                            <!--<button type="button" class="btn btn-primary" >Apply</button>-->
+                                        </div>
+
+
+                                        <!--<div class="pull-right" style="margin-left:10px;">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    1 Day
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(1)">1 Day</a></li>
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(7)">1 Week</a></li>
+                                                    <li><a ng-click="refreshLiveDataAsSelectedTime(30)">1 Month</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <label class="pull-right" style="margin-left:20px;margin-top:5px ;font-weight:normal;vertical-align:middle">Date Start</label>-->
+                                    </div>
+                                </div>
+
+                                <p></p>
+                                <div class="row" style="margin-left:10px;margin-right:10px">
+
+                                    <div class="pull-right" style="margin:5px" ng-show="isLiveDataLoadingOngoing()">
+                                        <div class="loaderForTitle"></div>
+                                    </div>
+
+                                    <ul class="nav nav-tabs">
+                                        <li ng-class="{ active: isSet(1) }">
+                                            <a ng-click="setTab(1)">Table View</a>
+                                        </li>
+                                        <li ng-class="{ active: isSet(2) }">
+                                            <a  ng-click="setTab(2)">Chart</a>
+                                        </li>
+                                        <li ng-class="{ active: isSet(3) }">
+                                            <a ng-click="setTab(3)">Download</a>
+                                        </li>
+
+                                    </ul>
+
+
+                                    <div class="row" style="margin-left:10px;margin-right:10px">
+
+                                        <div ng-show="isSet(1)">
+                                            <p></p> 
+                                            <table class="table table-striped" id="table-to-refresh">
+                                                <thead  style="background-color:#666666;color:white;font-size:16px">
+                                                    <tr>
+                                                        <th data-ng-repeat="dev in selectedDeviceLiveDataHeader track by $index" style="width:{{100/selectedDeviceLiveDataHeader.length}}%;word-wrap:break-word;height:auto">{{dev}}</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody style="height:300px;">
+                                                    <tr data-ng-repeat="row in selectedDeviceLiveDataTableContent">
+                                                        <td data-ng-repeat="col in row track by $index" style="width:{{100/selectedDeviceLiveDataHeader.length}}%">{{col }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                        <div ng-show="isSet(2)">
+
+                                            <div class="row" style="margin-top:10px;">
+
+                                                <div class="pull-right" style="margin-left:10px;">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                            {{selectedChartItem}}
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li data-ng-repeat="paramName in selectedLiveDataParameterList"><a ng-click="showLiveDataChartForParam(paramName)">{{paramName}}</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+
+                                                <div class="pull-right">
+                                                    <label style="font-weight:normal;margin-left:10px;margin-top:10px">Select a parameter</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <canvas id="line" class="chart chart-line" chart-data="data" height="100" chart-colors="colors"
+                                                            chart-labels="labels" chart-series="series" chart-options="options"
+                                                            chart-dataset-override="datasetOverride" chart-click="onClick"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div ng-show="isSet(3)">
+                                            <p></p>
+                                            <div class="row" style="margin-left:5px">
+
+                                                <div class="pull-left">
+                                                    <label style="font-weight:normal;margin-left:0px">Select start date,end date and format of the data, the press download button</label>
+                                                </div>
+                                            </div>
+                                            <p></p>
+                                            <div class="row" style="margin-left:5px">
+                                                <div class="pull-left">
+                                                    <label style="font-weight:normal;margin-left:0px">Start Date <input type="date" datetime-picker ng-model="startDateForLiveDataDownload" /></label>
+                                                    <label style="font-weight:normal;margin-left:0px">End Date <input type="date" datetime-picker ng-model="endDateForLiveDataDownload" /></label>
+                                                </div>
+
+                                            </div>
+                                            <div class="row" style="margin-top:8px;margin-left:5px">
+                                                <div class="pull-left">
+                                                    <label style="font-weight:normal;margin-left:0px;margin-top:5px">Select file Format</label>
+                                                </div>
+                                                <div class="pull-left" style="margin-left:5px">
+
+
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                            CSV
+                                                            <span class="caret"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li><a>CSV</a></li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top:20px;margin-left:5px">
+                                                <div style="display:table-cell;vertical-align:middle">
+                                                    <div class="pull-left">
+                                                        <button type="button" style="margin-right:10px" class="btn btn-default" ng-click="downloadLiveData()">
+                                                            Initiate Download
+
+                                                        </button>
+                                                       
+                                                    </div>
+                                                    <div class="pull-left" ng-show="isLiveDataDownloadOngoing()">
+                                                        <div class="loaderForTitle"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row" style="margin-top:20px;margin-left:5px" ng-show="isLiveDataDownloadFileProcessingFinished">
+                                                <label style="font-weight:normal;margin-left:0px">Data processing completed:</label>
+                                                <a ng-href="{{linkDownloadLive}}" download="DeviceValues.csv">Download Now</a>
+                                            </div>
+
+                                        </div>
+
+
+                                    </div>
+                                    <div class="row">
+
+                                       
+                                        <div class="pull-right" >
+
+                                            <ul class="pager" ng-show="isLiveDataPagerVisible">
+                                               
+                                                <label style="font-weight:normal">Page<span class="badge" style="margin:5px">{{ (liveTableOffset/liveTablePageSize)+1 }}/{{ceil(liveTableTotalCount/liveTablePageSize)}}</span></label>
+
+                                                <li><a ng-click="showPrevPageDataToLiveDataTable()">Previous</a></li>
+                                                <li><a ng-click="showNextPageDataToLiveDataTable()">Next</a></li>
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-group" id="accordion1">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h1 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion1" data-target="#collapse3">
+                                    <span class="glyphicon glyphicon-minus"></span> Data Statistics
+                                </a>
+                            </h1>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <div class="panel-body">
+                                    <div class="row" >
+                                        <!--<label class="pull-left" style="margin-left:20px;margin-top:5px ;font-weight:normal;vertical-align:middle">Select time period</label>
+                                        <div class="pull-left" style="margin-left:10px;">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    1 Day
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a ng-click="refreshStatDataAsSelectedTime(1)">1 Day</a></li>
+                                                    <li><a ng-click="refreshStatDataAsSelectedTime(7)">1 Month</a></li>
+                                                    <li><a ng-click="refreshStatDataAsSelectedTime(30)">1 Month</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>-->
+
+                                        <div>
+                                        <div class="pull-right" style="margin-left:10px;">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                    {{statTimeFrameForDisplay}}
+                                                    <span class="caret"></span>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a ng-click="selectStatTimeFrame('daily')">Daily</a></li>
+                                                    <li><a ng-click="selectStatTimeFrame('monthly')">Monthly</a></li>
+                                                    <li><a ng-click="selectStatTimeFrame('yearly')">Yearly</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <label class="pull-right" style="margin-left:20px;margin-top:5px ;font-weight:normal;vertical-align:middle">Time Frame</label>
+                                            <div>
+
+                                            </div>
+
+                                    <p></p>
+
+                                    <div class="row" style="margin-left:10px;margin-right:10px">
+
+                                       
+
+                                        <ul class="nav nav-tabs">
+                                            <li ng-class="{ active: isStatDataTabSelected(1) }">
+                                                <a  ng-click="setStatTab(1)">Table View</a>
+                                            </li>
+                                            <li ng-class="{ active: isStatDataTabSelected(2) }">
+                                                <a  ng-click="setStatTab(2)">Chart</a>
+                                            </li>
+                                            <li ng-class="{ active: isStatDataTabSelected(3) }">
+                                                <a ng-click="setStatTab(3)">Download</a>
+                                            </li>
+                                        </ul>
+
+
+                                        <div class="row" style="margin-left:10px;margin-right:10px">
+                                            <p></p>
+                                            
+                                            <div ng-show="isStatDataTabSelected(1)">
+                                                <div>
+                                                    <div class="pull-left">
+                                                        <div class="dropdown">
+                                                            <p></p>
+                                                            <button class="btn btn-primary dropdown-toggle" data-toggle="collapse" data-target="#demo">
+                                                                Select Parameter
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <p></p>
+                                                            <div id="demo" class="collapse" style="position:absolute">
+                                                                
+                                                                <div class="pull-left">
+                                                                    <div style="max-height: 300px;overflow: scroll;">
+                                                                        <ul class="list-group checked-list-box">
+                                                                            <!--<li class="list-group-item" data-checked="true">Dapibus ac facilisis in</li>-->
+                                                                            <li class="list-group-item" data-checked="true" data-ng-repeat="statTableParamItem in selectedDeviceStatParamSelection">
+                                                                                
+                                                                           
+                                                                                <div class="checkbox">
+                                                                                    <label><input type="checkbox" name="selectedFruits[]" value="{{statTableParamItem}}"
+                                                                                                  ng-checked="isStatItemSelectedForTableView(statTableParamItem)"
+                                                                                                  ng-click="selectStatParameterForTableview(statTableParamItem)">{{statTableParamItem.displayName}}</label>   
+                                                                                </div>
+                                                                                
+                                                                           
+                                                                            
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="pull-right" style="margin:5px" ng-show="isStatDataTableLoadingOngoing()" >
+                                                        <div class="loaderForTitle"></div>
+                                                    </div>
+                                                </div>
+
+                                                <table class="table table-striped" >
+                                                    <thead style="background-color:#666666;color:white;font-size:16px;height:40px">
+                                                        <tr>
+                                                            <th data-ng-repeat="statHeadItem in statDataTableHeader" style="width:14%">{{statHeadItem}}</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody style="height:300px;">
+                                                        <tr data-ng-repeat="row1 in selectedDeviceStatTableContent">
+                                                            <td data-ng-repeat="col1 in row1 track by $index" style="width:14%">{{col1 }}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                                <div class="row">
+                                                  
+                                                    <div class="pull-right">
+                                                        <ul class="pager">
+                                                            <label style="font-weight:normal">Page<span class="badge" style="margin:5px">{{ (statTableOffset/statTablePageSize)+1 }}/{{ceil(statTableTotalCount/statTablePageSize)}}</span></label>
+                                                            <li><a ng-click="showPrevPageDataToStatDataTable()">Previous</a></li>
+                                                            <li><a ng-click="showNextPageDataToStatDataTable()">Next</a></li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <div ng-show="isStatDataTabSelected(2)">
+                                                <div> 
+                                                    <div class="pull-right" style="margin:5px" ng-show="isStatDataChartLoadingOngoing()">
+                                                        <div class="loaderForTitle"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:10px;">
+                                                    <p></p>
+
+                                                    <div>
+                                                        <div class="pull-left">
+                                                            <label style="font-weight:normal;margin-left:10px;margin-top:10px">Select a parameter</label>
+                                                        </div>
+                                                        <div class="pull-left" style="margin-left:10px;">
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                                    {{selectedStatChartParamNameForDisplay}}
+                                                                    <span class="caret"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li data-ng-repeat="statParam in selectedDeviceStatParamSelection"><a ng-click="selectStatChartParameter(statParam)">{{statParam.displayName}}</a></li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </div>
+
+                                                    <div>
+
+                                                        <div class="pull-left">
+                                                            <label style="font-weight:normal;margin-left:10px;margin-top:10px">Select Function</label>
+                                                        </div>
+                                                    <div class="pull-left" style="margin-left:10px;">
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                                {{selectedStatChartItem}}
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li data-ng-repeat="statChartItem in statChartingParams"><a ng-click="showStatDataChartForParam(statChartItem)">{{statChartItem}}</a></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                  
+                                                        </div>
+                                                    
+                                                </div>
+
+                                                <p></p>
+                                               
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <canvas id="statLineChart" class="chart chart-line" chart-data="statLineChartData" height="100"
+                                                                chart-labels="statLineChartlabels" chart-series="statLineChartSeries" chart-options="statLineChartOptions"
+                                                                chart-dataset-override="datasetOverride" chart-click="onClick"></canvas>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="pull-right">
+                                                        <ul class="pager">
+                                                            <li><a ng-click="showPrevPageDataToStatDataChart()">Previous</a></li>
+                                                            <li><a ng-click="showNextPageDataToStatDataChart()">Next</a></li>
+                                                        </ul>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div ng-show="isStatDataTabSelected(3)">
+                                                <div class="row" style="margin-left:5px">
+
+                                                    <div class="pull-left">
+                                                        <label style="font-weight:normal;margin-left:0px">Select start date,end date and format of the data, the press download button</label>
+                                                    </div>
+                                                </div>
+                                                <p></p>
+                                                <div class="row" style="margin-left:5px">
+                                                    <div class="pull-left">
+                                                        <label style="font-weight:normal;margin-left:0px">Start Date <input type="date" datetime-picker ng-model="startDateForDownload" /></label>
+                                                        <label style="font-weight:normal;margin-left:0px">End Date <input type="date" datetime-picker ng-model="endDateForDownload" /></label>
+
+                                                    </div>
+                                                   
+                                                    </div>
+                                                <div class="row" style="margin-top:8px;margin-left:5px">
+                                                    <div class="pull-left" >
+                                                        <label style="font-weight:normal;margin-left:0px;margin-top:5px">Select file Format</label>
+                                                    </div>
+                                                    <div class="pull-left" style="margin-left:5px">
+
+
+                                                        <div class="dropdown">
+                                                            <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                                                CSV
+                                                                <span class="caret"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li><a>CSV</a></li>
+                                                            </ul>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="margin-top:20px;margin-left:5px">
+                                                   
+                                                    <div class="pull-left" style="margin-right:10px">
+                                                        <button type="button" class="btn btn-default" ng-click="downloadStat()">Initiate Download</button>
+                                                    </div>
+                                                    <div class="pull-left" ng-show="isStatDataDownloadOngoing()">
+                                                        <div class="loaderForTitle"></div>
+                                                    </div>
+                                                </div>
+                                              
+
+                                                <div class="row" style="margin-top:20px;margin-left:5px" ng-show="isStatDownloadFileProcessingFinished">
+                                                    <label style="font-weight:normal;margin-left:0px">Data processing completed:</label>
+                                                    <a ng-href="{{linkDownloadStat}}" download="DeviceValues.csv">Download Now</a>
+                                                </div>
+
+                                            </div>
+
+
+                                        </div>
+                                        
+                                       
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+
+   
+
+</div>
+</div>
+</div>
+</div>

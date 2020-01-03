@@ -1,0 +1,177 @@
+<style>
+    table {
+        border: 1px solid #CCC;
+        border-collapse: collapse;
+    }
+
+
+    .table1 td, .table th {
+    }
+
+
+    thead, tbody, tr, td, th {
+        display: block;
+        border: none !important;
+    }
+
+        tr:after {
+            content: ' ';
+            display: block;
+            visibility: hidden;
+            clear: both;
+        }
+
+        thead th {
+            height: 30px;
+            /*text-align: left;*/
+        }
+
+    tbody {
+        height: auto;
+        overflow-y: auto;
+    }
+
+    thead {
+        /* fallback */
+    }
+
+
+        tbody td, thead th {
+            /*width: 30%;*/
+            float: left;
+        }
+
+    .active_row {
+        border: 1px solid !important;
+        color: darkblue;
+    }
+
+    .angular-google-map-container {
+        height: 400px;
+        width: auto;
+    }
+
+    .chartAreaWrapper {
+        width: 600px;
+        overflow-x: scroll;
+    }
+
+    /* CSS REQUIRED */
+    .state-icon {
+        left: -5px;
+    }
+
+    .list-group-item-primary {
+        color: rgb(255, 255, 255);
+        background-color: rgb(66, 139, 202);
+    }
+
+    /* DEMO ONLY - REMOVES UNWANTED MARGIN */
+    .well .list-group {
+        margin-bottom: 0px;
+    }
+</style>
+<script>
+    var getAlarmTime = function (epoch) {
+        var d = new Date(epoch);
+        return d.toString();
+    }
+</script>
+<div class="container-fluid" style="margin-left:5px;margin-right:5px;margin-top:3px">
+
+    <div class="row">
+        <div class="panel panel-default" style="border-color:darkgray;background-color:white">
+            <div class="panel-heading" style="font-size:20px">Active Alarms</div>
+            <div class="panel-body">
+
+                
+                    <div class="row" style="margin-left:5px;margin-right:5px">
+                       
+                        <div class="pull-right" style="margin-left:10px;">
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">
+                                    {{selectedAlarmRule.ruleName}}
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li data-ng-repeat="ruleItem in avilableAlarmNames"><a ng-click="selectAlarmRuleFilter(ruleItem)">{{ruleItem.ruleName}}</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <label style="font-weight:normal;margin-left:10px;margin-top:10px">Filter By Alarm</label>
+                        </div>
+
+                        <div class="pull-left" >
+                            <label style="font-weight:normal;margin-left:0px;margin-top:10px">Table below shows the latest alarms generated</label>
+                        </div>
+
+                    </div>
+                <p></p>
+                <div class="row" style="margin-left:5px;margin-right:5px">
+                    <table class="table table-striped" >
+                        <thead style="background-color:#666666;color:white;font-size:16px;height:40px">
+                            <tr>
+                                <th style="width:10%">No.</th>
+                                <th style="width:20%">Alarm Name</th>
+                                <th style="width:20%">Time Stamp</th>
+                                <th style="width:30%">Logs</th>
+                            </tr>
+                        </thead>
+                        <tbody style="max-height:700px;height:600px">
+                            <tr data-ng-repeat="alarmRecord in alarmRecords">
+                                <td style="width:10%">{{alarmRecord.index}}</td>
+                                <td style="width:20%">{{alarmRecord.ruleName}}</td>
+                                <td style="width:20%">{{alarmRecord.alarmTime}}</td>
+                                <td style="width:30%">
+                                    <div ng-show="alarmRecord.type != 'device'">
+                                        <div class="panel-group">
+                                            <div ng-repeat="log in alarmRecord.liveLog" class="panel panel-default">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title">
+                                                        <a data-toggle="collapse" data-parent="#accordion" data-target="#collapse{{log.uniqueId}}">Device Id: {{log.deviceId}}; Location: {{log.location}}</a>
+                                                    </h4>
+                                                </div>
+                                                <div id="collapse{{log.uniqueId}}" class="panel-collapse collapse">
+                                                        <ul class="list-group" ng-repeat="(paramName,pValue) in log.paramValues">
+                                                            <li class="list-group-item" ng-repeat="valueLog in pValue.logs">{{pValue.displayName}}, Value: {{valueLog.value}}, TimeStamp: {{epochToString (valueLog.timeStamp)}}</li>
+                                                        </ul>
+                                                    <!--<ul class="list-group">
+                                                        <li class="list-group-item" ng-repeat="(paramName,pValue) in log.paramValues">{{pValue.displayName}}, Value: {{pValue.value}}</li>
+                                                    </ul>-->
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </td>
+                                <td style="width:10%" ng-show="alarmRecord.alarmStatus == 'Active'">
+                                    <button type="button" class="btn btn-default" ng-click="clearAlarmButtonClick(alarmRecord)">Clear Alarm</button>
+                                </td>
+				<td style="width:10%" ng-show="alarmRecord.alarmStatus == 'Active'">
+					<label>Active</label>
+				</td>
+				<td style="width:10%" ng-hide="alarmRecord.alarmStatus == 'Active'">
+					<label>InActive</label>
+				</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div  >
+                    <div class="pull-left" style="margin-left:5px">
+                        <a >Total Records <span class="badge">{{numberOfRecords}}</span></a><br>
+                    </div>
+                    <div class="pull-right" >
+                        <ul class="pager">
+                            <li><a ng-click="showPrevPageDataToAlarmRecords()">Previous</a></li>
+                            <li><a ng-click="showNextPageDataToAlarmRecords()">Next</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

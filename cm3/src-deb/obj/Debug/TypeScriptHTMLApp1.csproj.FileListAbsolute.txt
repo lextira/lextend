@@ -1,0 +1,5 @@
+E:\SmartCity\IOTServer\bin\TypeScriptHTMLApp1.dll
+E:\SmartCity\IOTServer\bin\TypeScriptHTMLApp1.pdb
+E:\SmartCity\IOTServer\obj\Debug\TypeScriptHTMLApp1.csprojResolveAssemblyReference.cache
+E:\SmartCity\IOTServer\obj\Debug\TypeScriptHTMLApp1.dll
+E:\SmartCity\IOTServer\obj\Debug\TypeScriptHTMLApp1.pdb

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clean Air India</title>
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
+
+</head>
+
+<body ng-app="F1FeederApp">
+    <!-- <ng-view></ng-view> -->
+
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/lodash/dist/lodash.min.js"></script>
+
+
+    <script src="bower_components/moment/min/moment.min.js"></script>
+
+    <script src="bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+
+
+    <script src="bower_components/chosen/chosen.jquery.min.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/jstzdetect/jstz.min.js"></script>
+
+
+    <script src="bower_components/angular-timezone-selector/build/angular-timezone-selector.js"></script>
+
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/ngStorage-master/ngStorage.js"></script>
+    <script src="bower_components/angularjs-datetime-picker/angularjs-datetime-picker.min.js"></script>
+    <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+
+ <!--   <script src="Code/node_modules/uuid/v1.js"></script> -->
+
+    <script src="js/angular_google_maps/lodash.core.js"></script>
+    <script src='//maps.googleapis.com/maps/api/js?key=AIzaSyAIxBnZBrLo32r-af2Oti4CqaMOjkj_OkY&sensor=false&libraries=visualization'></script>
+    <script src="js/angular_google_maps/angular-simple-logger.js"></script>
+
+    <script src="js/angular_chart/Chart.min.js"></script>
+    <script src="js/angular_chart/angular-chart.min.js"></script>
+    <script src="js/angular_google_maps/angular-google-maps.min.js"></script>
+
+    <script src="js/app.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/controller/controllers.js"></script>
+
+    <script src="js/controller/heatmap_controller.js"></script>
+        <script src="js/controller/dashboard_controller.js"></script>
+
+    <script src="js/controller/device_manager_controller.js"></script>
+    <script src="js/controller/user_manager_controller.js"></script>
+    <script src="js/controller/login_controller.js"></script>
+    <script src="js/controller/navigation_controller.js"></script>
+    <script src="js/controller/live_data_controller.js"></script>
+    <script src="js/controller/zone_data_controller.js"></script>
+    <script src="js/controller/alarm_management_controller.js"></script>
+    <script src="js/utils/zone_data_processor.js"></script>
+    <script src="js/utils/chart_data_processor.js"></script>
+    <script src="js/controller/active_alarm_controller.js"></script> 
+    <script src="js/controller/thirdpartyuser_controller.js"></script>
+
+    
+
+
+    <link rel="stylesheet" type="text/css" href="css/dashboard1.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/angular-timezone-selector/styling/angular-timezone-selector.min.css">
+
+    <link rel="stylesheet" type="text/css" href="css/common.css">
+    <link rel="stylesheet" type="text/css" href="css/sidenav.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/angularjs-datetime-picker/angularjs-datetime-picker.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <div>
+        <div ng-include="'views/header.html'"></div>
+    </div>
+
+    <div ng-view></div>
+    <div ng-controller="navigationController" id="mySidenav" class="sidenav" ng-mouseleave="closeNav()">
+        <a href="javascript:void(0)" class="closebtn" ng-click="closeNav()">&times;</a>
+
+        <a href="/#/live_data" ng-click="closeNav()">
+            <span  style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px" ><img  src="images/live_icon.png" style="height:30px;margin-right:7px"></img>Live Data</span>
+        </a>
+        
+        <a href="/#/alarm_manage" ng-show="check1func(0)" ng-click="closeNav()" >
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img src="images/live_icon.png" style="height:30px;margin-right:7px"></img>Alarm Management</span>
+        </a>
+        <a href="/#/active_alarms" ng-click="closeNav()">
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img src="images/live_icon.png" style="height:30px;margin-right:7px"></img>Active Alarms</span>
+        </a>
+
+        <a href="/#/device_admin" ng-show="check1func(2)" ng-click="closeNav()" >
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img  src="images/device_icon.png" style="height:30px;margin-right:5px"></img>Manage Devices</span>
+        </a>
+
+        <a href="/#/thirdpartyuser" ng-show="check1func(3)" ng-click="closeNav()" >
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img  src="images/device_icon.png" style="height:30px;margin-right:5px"></img>Api Key</span>
+        </a>
+        
+        <a href="/#/user_management" ng-show="check1func(4)" ng-click="closeNav()" >
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img src="images/user_manag_icon.png" style="height:30px;margin-right:7px"></img>User Management</span>
+       <!--     <span class="glyphicon glyphicon-cog"></span>User Management-->
+        </a>
+        <a href="/#/api" ng-click="closeNav()">
+            <span style="vertical-align:baseline;display:inline-block;text-align:center;line-height:40px;height:30px"><img src="images/settings_icon.png" style="height:30px;margin-right:7px"></img>API-FAQ</span>
+        </a>
+    </div>
+
+</body>
+</html>

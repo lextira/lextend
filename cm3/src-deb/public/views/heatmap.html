@@ -1,0 +1,565 @@
+<style type="text/css">
+    .spanAQIGood {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #00b050;
+    }
+
+    .spanAQISatisfactory {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #92d050;
+    }
+
+    .spanAQIModerate {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ffff00;
+    }
+
+    .spanAQIPoor {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ffc000;
+    }
+
+    .spanAQIVeryPoor {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #ff0000;
+    }
+
+    .spanAQISevere {
+        padding-left: 10px;
+        padding-right: 10px;
+        background-color: #c00000;
+    }
+
+    .fullscreen_container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+    }
+    
+    .over_map_left_pane {
+        position: absolute;
+        top: 100px;
+        left: 0px;
+        bottom: 0px;
+        width: 75px;
+        z-index: 99;
+        /*background-image: linear-gradient( to bottom, black, gray, black );
+        background-repeat: no-repeat;
+        background-size: 100% 100%;*/
+       background-color: rgb(28,28,40);
+    }
+
+    .over_map_right_pane {
+        position: absolute;
+        top: 100px;
+        right: 0px;
+        bottom: 0px;
+        width: 400px;
+        z-index: 99;
+        background-image: linear-gradient( to right, rgb(22,18,53) 80%, rgb(96,93,120));
+        /*background-repeat: no-repeat;
+        background-size: 100% 100%;
+        background-color: rgb(28,28,40);*/
+    }
+
+    .over_map_title_pane {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        height: 100px;
+        right: 0px;
+        z-index: 99;
+        /*background-image: linear-gradient( to right, black, gray, black, black );
+        background-repeat: no-repeat;
+        background-size: 100% 100%;*/
+        background-color: rgb(28,28,40);
+    }
+
+    .angular-google-map-container {
+        position: absolute;
+        top: 100px;
+        bottom: 0;
+        right: 400px;
+        left: 75px;
+    }
+
+    .arrange-horizontally > * {
+        display: inline-block;
+        text-align: center;
+        border: 0px solid black;
+    }
+
+    .arrange-vertically > * {
+        display: block;
+        border: 0px solid blue;
+    }
+
+    .title_value_display_box {
+        position: relative;
+        margin-left: 2px;
+        margin-right: 2px;
+        top: 2px;
+        bottom: 2px;
+        width: 200px;
+        height: 96px !important;
+        border-radius: 5px;
+        border: 0px solid red;
+        background-color: rgba(255,255,255,0.05) !important;
+    }
+
+    .city_title_display_box {
+        position: relative;
+        margin: auto;
+        top: 0px;
+        bottom: 2px;
+        width: 300px;
+        height:100px !important;
+        border-radius: 5px;
+        border: 0px solid red;
+        vertical-align: top;
+        background-color: transparent !important;
+    }
+
+    .city_title {
+        position: relative;
+        left: 38px;
+        top: 28px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+        display: inline-block;
+        float: left;
+        border: 0px solid blue;
+    }
+
+    .city_icon {
+        position: absolute;
+        margin: auto;
+        left: 3px;
+        top: 20px;
+        width: 30px;
+        height: 50px;
+        display: inline-block;
+        border: 0px solid blue;
+        background-size: contain;
+        background-repeat:no-repeat; 
+    }
+
+    .updated_time {
+        position: absolute;
+        left: 38px;
+        top: 10px;
+        font-size: 12px;
+        font-weight: normal;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+        display: inline-block;
+        float: left;
+        border: 0px solid blue;
+    }
+
+    .right {
+        position: absolute;
+        right: 0px;
+    }
+
+    .parameter_title {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        color: gray;
+        border: 0px solid blue;
+        display: block;
+        text-align: center;
+        font-family: 'Segoe UI Emoji';
+    }
+
+    .parameter_title_attribute {
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        font-size: 10px;
+        color: silver;
+        border: 0px solid blue;
+        font-weight: normal;
+        font-family: 'Segoe UI Emoji';
+    }
+
+    .parameter_icon {
+        position: relative;
+        top: 25px;
+        width: 40px;
+        height: 40px;
+        display: block;
+        border: 0px solid blue;
+        background-size: contain;
+    }
+
+    .parameter_value_box {
+        position: absolute;
+        top: 0;
+        width: 260px;
+        height: 96px !important;
+        border: 0px solid blue;
+        display: block;
+    }
+
+    .parameter_value_container {
+        position: relative;
+        left: 42px;
+        width: 150px;
+        border: 0px solid blue;
+        text-align: center;
+    }
+
+    .parameter_value {
+        position: relative;
+        font-size: 30px;
+        border: 0px solid blue;
+        font-weight: bold;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+    }
+
+    .parameter_value_unit {
+        position:relative;
+        font-size: 15px;
+        font-weight: normal;
+        border: 0px solid blue;
+        color: silver;
+        font-family: 'Segoe UI Emoji';
+    }
+
+    .parameter_range_indicator {
+        position: relative;
+        top: 6px;
+        left: 65px;
+        background-color: green;
+        width: 60px;
+        height: 4px;
+        display: block;
+        align-content: center;
+        border-radius: 2px;
+    }
+
+    .chartAreaWrapper {
+        width: 600px;
+        overflow-x: scroll;
+    }
+
+    .graph_main {
+        position: relative;
+        top: 0px;
+        margin-left: 25px;
+        background-color: transparent;
+        margin-right: 2px;
+        height: 100% !important;
+        width: 373px !important;
+        border-radius: 2px;
+    }
+
+    .btn {
+        position: relative;
+        height: 40px;
+        color: white;
+        display: table-cell;
+        font-size: 12px;
+        padding: 0;
+        width: 40px;
+        border-radius: 50%;
+        border: 2px solid rgb(15,64,141);
+        text-align: center;
+        font-family: 'Segoe UI Emoji';
+    }
+
+    .btn-normal {
+        background-color: transparent;
+    }
+
+    .btn-selected {
+        background-color: rebeccapurple;
+    }
+
+    .btn:hover {
+        background-color: rebeccapurple;
+        color: white;
+    }
+
+    .bottom_graph {
+        position: relative;
+        bottom: 0;
+    }
+
+    .main_param {
+        font-size: 18px;
+        display: inline;
+        text-align: center;
+        color: gray;
+    }
+
+    .div_horiz_stack_panel {
+        float: left;
+        display: inline-block;
+        white-space: nowrap;
+    }
+
+    .headerItem {
+        position: relative;
+        width: 396px;
+    }
+
+    .pane_border {
+        width: 98%;
+        padding: 4px;
+        margin: 1.5%;
+        height: 48%;
+        background-color: rgba(31,31,69,1);
+        border: 0px solid rgb(111,79,136);
+    }
+
+    .primary_param_title {
+        font-weight: lighter;
+        font-size: 27px;
+        margin-right: 10px;
+    }
+
+    .primary_param_value {
+        font-size: 47px;
+        color: silver;
+        font-weight: bold;
+    }
+
+    .live_data_param_value {
+        font-size: 30px;
+        border: 0px solid blue;
+        font-weight: bold;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+    }
+
+    .live_data_param_unit {
+        font-size: 15px;
+        font-weight: normal;
+        border: 0px solid blue;
+        color: silver;
+        font-family: 'Segoe UI Emoji';
+    }
+
+    .liveChartParamItem {
+        position: relative;
+        height: 5%;
+    }
+
+    .mainGraphHeightControl {
+        position: relative;
+        width: 390px;
+    }
+
+    /*.mainGraph{
+        width:100% !important;
+    }*/
+
+    .subGraphHeightControl {
+        position: relative;
+        top:0px;
+        width: 390px;
+    }
+
+    .control_btn {
+        position: relative;
+        width: 75px;
+        height: 65px;
+        color: white;
+        display: table-cell;
+        font-size: 12px;
+        border-radius: 3px;
+        border: 0px solid rgb(15,64,141);
+        margin-left: 0px;
+        margin-right: 0px;
+        text-align: center;
+        font-family: 'Segoe UI Emoji';
+        cursor: pointer;
+    }
+
+    .control_btn_icon {
+        position: absolute;
+        top: 5px;
+        width: 45px;
+        height: 38px;
+        left: 15px;
+        border: 0px solid rgb(15,64,141);
+        display: block;
+        text-align: center;
+    }
+
+    .control_btn_text {
+        position: absolute;
+        top: 45px;
+        height: 15px;
+        width: 75px;
+        border: 0px solid rgb(15,64,141);
+        display: block;
+        text-align: center;
+        vertical-align: middle;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+        font-weight: bold;
+    }
+
+    .control_btn-normal {
+        background-color: transparent;
+        width: 75px;
+    }
+
+    .control_btn-selected {
+        background-color: rgba(192, 192, 192, 0.50);
+        width: 76px;
+    }
+
+    .control_btn:hover {
+        background-color: rgba(192, 192, 192, 0.20);
+        color: white;
+    }
+
+    .newId {
+        position: absolute;
+        left: 38px;
+        top: 60px;
+        font-size: 15px;
+        font-weight: normal;
+        font-family: 'Segoe UI Emoji';
+        color: silver;
+        display: inline-block;
+        float: left;
+        border: 0px solid blue;
+    }
+
+    .rightchart{
+        position: absolute;
+        top: 50px;
+        right: 150px;
+    }
+</style>
+
+
+<div class="fullscreen_container">
+    <ui-gmap-google-map id="heatmap" center="heatmap.center" draggable="true" control="heatmap.control" zoom="heatmap.zoom" events="heatmap.events" data-options="{disableDefaultUI:true}"> 
+        <ui-gmap-marker ng-repeat="m in heatmap.deviceMarkers" coords="m.coords" icon="m.icon" idkey="m.id" title="m.title" click="deviceSelected(m)"></ui-gmap-marker>
+        <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="heatmap.showHeat" onCreated="heatmap.heatLayerCallback"></ui-gmap-layer>
+    </ui-gmap-google-map>
+    <div class="over_map_right_pane">
+        <div class="pane_border">
+            <div class="row headerItem" style="height:40%">
+                <div style="text-align: center">
+                    <label class="main_param primary_param_title" ng-bind-html="SkipValidation(primaryParam.displayNameHtml)"></label>
+                    <label class="main_param primary_param_value">{{primaryParam.average.value}}</label>
+                </div>
+                <div style="text-align: center">
+                    <label class="main_param" style="font-weight: lighter; color: #{{primaryParam.average.color}}; font-size: 27px; margin-right: 10px">{{primaryParam.average.description}}</label>
+                </div>
+            </div>
+            <div class="row headerItem" style="height:20%">
+                <div style="text-align: center">
+                    <div style="margin-left: 17px">
+                        <img ng-src="{{primaryParam.average.valueWeight < 2 && './images/walking_enabled.png' || './images/walking_disabled.png' }}" class="img-rounded" alt="Cinque Terre" width="35" height="30" style="margin:15px" />
+                        <img ng-src="{{primaryParam.average.valueWeight < 4 && './images/cycling_enabled.png' || './images/cycling_disabled.png' }}" class="img-rounded" alt="Cinque Terre" width="35" height="30" style="margin:15px"/>
+                        <img ng-src="{{primaryParam.average.valueWeight < 3 && './images/shopping_enabled.png' || './images/shopping_disabled.png' }}" class="img-rounded" alt="Cinque Terre" width="35" height="30" style="margin:15px"/>
+                        <img ng-src="{{primaryParam.average.valueWeight < 2 && './images/relaxing_enabled.png' || './images/relaxing_disabled.png' }}" class="img-rounded" alt="Cinque Terre" width="35" height="30" style="margin:15px"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row mainGraphHeightControl" style="height:40%">
+                <canvas id="line" class="chart chart-line graph_main " chart-data="dataMainChart" style="height: 100%; width: 100%"
+                    chart-labels="labelsMainChart" chart-series="seriesMainChart" chart-options="optionsMainChart"
+                    chart-dataset-override="datasetOverride" chart-click="onClick"></canvas>
+            </div>
+        </div>
+
+        <div class="pane_border">
+            <div class="row headerItem" style="height:20%;text-align:center">
+                <span style="margin-top:10px" ng-repeat="param in deviceDisplayParamsRight track by $index">
+                    <div class="btn" style="margin-left:5px" ng-bind-html="SkipValidation(param.displayNameHtml)" ng-click="rightParamClicked(param, $index)" ng-class="{'btn-selected': $index==selectedRightPanelIndex, 'btn-normal' : $index!=selectedRightPanelIndex}">
+                    </div>
+                </span>
+            </div>
+            <div class="row headerItem" style="height:25%">
+                <div class = "liveChartParamItem  " style="text-align:center">
+                    <label class="main_param" style="font-weight:lighter;font-size:27px;margin-right:10px;color:blueviolet" ng-bind-html="SkipValidation(selectedRightParam.displayNameHtml)"></label>
+                    <label class="main_param live_data_param_value">{{selectedRightParam.average.value}}</label>
+                    <label class="main_param live_data_param_unit" ng-bind-html="SkipValidation(selectedRightParam.unitDisplay)"></label>
+                </div>
+                <div class="rightchart" style="text-align: center">
+                    <label style="font-weight: lighter; color: #{{selectedRightParam.average.color}}; font-size: 18px; margin-right: 10px">{{selectedRightParam.average.description}}</label>
+                </div>
+            </div>
+
+            <div class="row subGraphHeightControl" style="height:55%">
+                <canvas id="line" class="chart chart-line graph_main" chart-data="dataLiveChart" chart-colors="colors"
+                        chart-labels="labelsLiveChart" chart-series="seriesLiveChart" chart-options="optionsLiveChart"
+                        chart-dataset-override="datasetOverride" chart-click="onClick">
+                </canvas>
+            </div>
+        </div>
+    </div>
+    <div class="over_map_title_pane arrange-horizontally">
+        <div id="cityDisplay" class="city_title_display_box">
+            <div class="city_icon" style="background-image: url('./images/map-marker-selected-small.png')" />
+            <div class="icontext city_title">{{deviceLocation}}</div>
+            <div class="updated_time">Last Updated On: {{lastUpdateTime}}</div>
+            <div class="newId"> Device Id: {{selectedDeviceId}}</div>
+        </div>
+            
+        <div class="arrange-horizontally right">
+            <div id="tile1" class="tile title_value_display_box" ng-repeat="paramGroup in deviceDisplayParamsTop track by $index">
+                <div id="carousel{{$index}}" class="carousel slide" data-ride="carousel" data-pause="false">
+                    <!-- Wrapper for slides -->
+                    <div class="carousel-inner">
+                        <div class="item text-center" style="padding: 5px" ng-repeat="param in paramGroup" ng-class="{active : $first}">
+                            <div class="arrange-horizontally">
+                                <div class="parameter_icon" style="background-image: url('./images/{{param.displayImage}}')" />
+                                <div class="parameter_value_box">
+                                    <span class="icontext parameter_title_attribute">{{param.type}} </span>
+                                    <div class="parameter_value_container">
+                                        <span class="icontext parameter_value">{{param.value.value}}</span>
+                                        <span class="parameter_value_unit" ng-bind-html="SkipValidation(param.unitDisplay)"></span>
+                                    </div>
+                                </div>
+                                <div class="icontext parameter_title" ng-bind-html="SkipValidation(param.displayNameHtml)"></div>
+                                <div class="icontext parameter_range_indicator" style="background-color:#{{param.value.color}}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>         
+
+        </div>
+    </div>
+    <div class="over_map_left_pane arrange-vertically">
+        <div class="control_btn" ng-click="homeButtonClicked()" ng-class="{'control_btn-selected': 0==controlButtonIndex, 'control_btn-normal' : 0!=controlButtonIndex}">
+            <img class="control_btn_icon" ng-src="{{controlButtonIndex == 0 && './images/homeOn.png' || './images/home.png' }}" ></img>
+            <div class="control_btn_text">Home</div>
+        </div>
+        <p></p>
+        <div class="control_btn" ng-click="overviewButtonClicked()" ng-class="{'control_btn-selected': 1==controlButtonIndex, 'control_btn-normal' : 1!=controlButtonIndex}">
+            <img class="control_btn_icon" ng-src="{{controlButtonIndex == 1 && './images/overviewOn.png' || './images/overview.png' }}" ></img>
+            <div class="control_btn_text">Overview</div>
+        </div>
+        <p></p>
+        <div class="control_btn" ng-click="logoutButtonClicked()" ng-class="{'control_btn-selected': 2==controlButtonIndex, 'control_btn-normal' : 2!=controlButtonIndex}">
+            <img class="control_btn_icon" ng-src="{{controlButtonIndex == 2 && './images/logoutOn.png' || './images/logout.png' }}" ></img>
+            <div class="control_btn_text">Logout</div>
+        </div>
+    </div>
+</div>
