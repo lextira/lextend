@@ -1,0 +1,401 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <li class="ui-field-contain">
+        <ul data-role="listview">
+            <fieldset class="ui-grid-a">
+                <li class="ui-field-contain" style="margin: 0 0 .5em 0">
+                    <label  class="select">Authentication Code:</label>
+                    <div class="ui-block-a">
+                        <input type="text" name="code" id="accescode"/>
+                    </div>
+                </li>
+                <li>
+                    <input type="submit" value="Authentication Code" data-theme="a" id="code"></input>
+                    <input type="submit" value="discover" data-theme="a" id="discover"></input>
+
+                    <br>
+                    <br>
+
+                </li>
+            </fieldset>
+        </ul>
+
+        <br>
+        <br>
+
+<!--        <ul data-role="listview" data-inset="true">-->
+<!--            <li class="ui-field-contain">-->
+<!--                <h1 style="font-size:1.4em;">Doorbell</h1>-->
+<!--            </li>-->
+<!--            <li class="ui-field-contain">-->
+<!--                <label for="slider">Ignore -DB Sonos name</label>-->
+<!--                <div id="slide">-->
+<!--                    <select name="sonos_doorbell.ignore_sonos_names" id="slider" data-role="slider">-->
+<!--                        <option value="off">Off</option>-->
+<!--                        <option value="on">On</option>-->
+<!--                    </select></div>-->
+<!--            </li>-->
+<!--        </ul>-->
+        <div id="div1"></div>
+
+        <br>
+
+        <input type="range" name="volume" id="volume" min="0" max="100" value=""/>
+        <input type="submit" id="volumeset" value="Set Volume" data-theme="a"></input>
+        <input type="submit" value="play " data-theme="a" id="play"></input>
+        <input type="submit" value="pause" data-theme="a" id="pause"></input>
+        <input type="submit" value="Next Track" data-theme="a" id="skipToNextTrack"></input>
+        <input type="submit" value="Previous Track" data-theme="a" id="skipToPreviousTrack" id="skipToPreviousTrack"></input>
+        <input type="submit" id="getplaylist" data-theme="a" value="Get Playlist"/>
+        <div id="div3" ></div>
+        <input type="submit" id="loadplaylist" data-theme="a" value="Load Playlist"/>
+
+    </li>
+</li>
+
+
+<script>
+
+    $(function(){
+        $('#code').click(function(){
+		 var access = $('#accescode').val();
+		 alert (access);
+
+		$.ajax({
+			url: '/settings/access',
+			datatype:"json",
+			data: {accesscode:access},
+			type: 'GET',
+			success: function(response){
+				alert ("Authentication Succesfull");
+			},
+		});
+	});
+});
+
+    $(function(){
+	$('#discover').click(function(){
+
+		$.ajax({
+			url: '/settings/discover',
+
+			success: function(response){
+
+				var returnedData =JSON.parse(response);
+				if(returnedData.data == 'Device found')
+				{
+				$('#volume').val(returnedData.volume);
+
+				    alert(returnedData.data);
+                       $('#div1').empty();
+
+                        for (i=0;i<returnedData.group_name.length;i++)
+                        {
+                        demo(returnedData.data,returnedData.group_name[i],returnedData.volume,returnedData.group_id);
+                        }
+
+                        // $('#div2').empty();
+                        collapse(returnedData.group_name);
+
+				}
+				else{
+
+				               $('#div1').empty();
+				                $('#div1').append("<h4>No device found </h4>");
+				}
+
+
+			},
+		});
+	});
+});
+
+    $(function(){
+	$('#volumeset').click(function(){
+		 var vol = $('#volume').val();
+<!--			alert (vol);-->
+		$.ajax({
+			url: '/settings/setvolume',
+			datatype:"json",
+			data: {volume:vol},
+			type: 'GET',
+			success: function(response){
+			var returnedData =JSON.parse(response);
+				alert ("success");
+				for(i=0;i<returnedData.group_name.length;i++)
+				{
+				document.getElementById(returnedData.group_name[i]).innerHTML = vol ;
+				}
+			},
+		});
+	});
+});
+
+    $(function(){
+	$('#play').click(function(){
+
+<!--			alert ("play");-->
+
+		$.ajax({
+			url: '/settings/play',
+
+			success: function(response){
+				alert ("success");
+			},
+		});
+	});
+});
+
+$(function(){
+	$('#pause').click(function(){
+
+<!--			alert ("pause");-->
+
+		$.ajax({
+			url: '/settings/pause',
+
+			success: function(response){
+				alert ("success");
+			},
+		});
+	});
+});
+
+$(function(){
+	$('#skipToNextTrack').click(function(){
+
+<!--			alert ("skipToNextTrack");-->
+
+		$.ajax({
+			url: '/settings/skipToNextTrack',
+
+			success: function(response){
+				alert ("success");
+			},
+		});
+	});
+});
+
+$(function(){
+	$('#skipToPreviousTrack').click(function(){
+
+<!--			alert ("skipToPreviousTrack");-->
+
+		$.ajax({
+			url: '/settings/skipToPreviousTrack',
+
+			success: function(response){
+				alert ("success");
+			},
+		});
+	});
+});
+
+
+function playlist(playlistname)
+{
+  $('#div3').empty();
+
+str ="";
+
+str += ' <ul data-role="listview"><li class="ui-field-contain">'+
+      '<div id="playlistdiv" data-role="collapsible" data-collapsed="true">'+
+        '<h4>Sonos playlist</h4>'+
+        '<ul data-role="listview">'
+          
+         
+ for(var key in playlistname)
+ {
+    if (playlistname.hasOwnProperty(key))
+    {
+
+ str += '<li class="ui-field-contain">'+
+              '<label for="'+[key]+'"'+
+                     'class="select">'+[key]+'</label>'+
+              '<div class="ui-grid-solo" id="'+[key]+'">'+
+                '<div class="ui-block-a">'+
+                  '<input type="radio"'+
+                        ' id="playlist_checkbox"'+
+                         'name="'+"playlist"+'" value="'+playlistname[key]+' '+[key]+'"/>'+
+                '</div>'+
+
+              '</div>'+
+            '</li>'
+
+            }
+
+ }
+          
+str +=
+        '</ul>'+
+      '</div>'+
+    '</li><ul data-role="listview">'
+
+ $('#div3').append(str);
+
+}
+
+function demo(data,groupname,vol,group_id)
+{
+str ="";
+    str += '<ul data-role="listview">'+
+                  '<li class="ui-field-contain">'+
+                    '<div data-role="collapsible" data-collapsed="false">'+
+                      '<h4 id="heading">'+groupname+'</h4>'+
+                      '<ul data-role="listview">'+
+                        '<li class="ui-field-contain">'+
+                         ' <label class="select">Name</label>'+
+                          '<label>'+groupname+'</label>'+
+                        '</li>'+
+                          '<li class="ui-field-contain">'+
+                                '<label class="select">Group ID</label>'+
+                                '<label>'+group_id+'</label>'+
+                                    '</li>'+
+                          '<li class="ui-field-contain">'+
+                                '<label class="select">Group Volume</label>'+
+                                '<label id="'+groupname+'">'+vol+'</label>'+
+                                    '</li>'+
+                           '</ul>'+
+                                     '</div>'+
+                                    '</li>'+
+                          '</ul>'
+
+       $('#div1').append(str);
+    }
+function collapse(groupname)
+{
+str ="";
+str += ' <ul data-role="listview"><li class="ui-field-contain">'+
+      '<div id="grouping" data-role="collapsible" data-collapsed="true">'+
+        '<h4>Grouping/Ungrouping</h4>'+
+        '<ul data-role="listview">'
+
+
+ for(i=0;i<groupname.length;i++)
+ {
+ str += '<li class="ui-field-contain">'+
+              '<label for="'+i+'"'+
+                     'class="select">Sonos '+i+'</label>'+
+              '<div class="ui-grid-solo" id="'+i+'">'+
+                '<div class="ui-block-a">'+
+                  '<label for="">'+groupname[i]+
+                  '</label>'+
+                  '<input type="checkbox"'+
+                        ' id="group_checkbox"'+
+                         'name="'+groupname[i]+'" value="'+groupname[i]+'"/>'+
+
+                '</div>'+
+              '</div>'+
+            '</li>'
+
+ }
+
+str += '<input type="submit" id="group" data-theme="a" value="Group/Ungroup"/><br>'+
+<!--'<input type="submit" id="getplaylist" data-theme="a" value="Get Playlist"/>'+-->
+
+
+// '<input type="ungrouping" id="demo" value="Ungroup"/>'+
+        '</ul>'+
+      '</div>'+
+    '</li><ul data-role="listview">'
+
+ $('#div1').append(str);
+
+
+ $(function(){
+	$('#group').click(function(){
+
+		var group_sonos = [];
+		var ungroup_sonos = [];
+
+            $.each($("input[id='group_checkbox']:checked"), function(){
+                group_sonos.push($(this).val());
+            });
+              $.each($("input[id='group_checkbox']:not(:checked)"), function(){
+                ungroup_sonos.push($(this).val());
+            });
+<!--            alert(ungroup_sonos);-->
+
+            $.ajax({
+			url: '/settings/group',
+			datatype:"json",
+			data: {group_sonos_list:group_sonos,
+			ungroup_sonos_list:ungroup_sonos},
+			type: 'GET',
+			success: function(response){
+			alert ("success");
+			},
+		});
+	});
+
+	$(function(){
+	$('#loadplaylist').click(function(){
+
+<!--	    alert ("load Playlist");-->
+
+              $.each($("input[id='playlist_checkbox']:checked"), function(){
+                playlist_id = ($(this).val().split(" ")[0]);
+            });
+<!--            alert(playlist_id);-->
+
+            $.ajax({
+			url: '/settings/loadplaylist',
+			datatype:"json",
+			data: {playlist_id:playlist_id},
+			type: 'GET',
+			success: function(response){
+			alert ("success");
+			},
+		});
+
+
+
+		});
+	});
+
+
+  $(function(){
+	$('#getplaylist').click(function(){
+<!--			alert ("getPlaylist");-->
+		$.ajax({
+			url: '/settings/getPlaylist',
+            success: function(response){
+            alert ("success");
+            var returnedData =JSON.parse(response);
+            playlist(returnedData['playlist'])
+       
+			},
+		});
+	});
+});
+
+
+});
+}
+
+    $(function(){
+    $('#slide').click(function(){
+    if( $('#slider').val() == 'on')
+    {
+    $.ajax({
+			url: '/settings/ignoreDB',
+			datatype:"json",
+			data: {},
+			type: 'GET',
+			success: function(response){
+				alert ("success");
+			},
+		});
+    }
+  });
+  });
+
+
+
+</script>
+
+</body>
+
+{% endblock %}
+

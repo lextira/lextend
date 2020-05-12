@@ -269,7 +269,7 @@ import urllib2
 @app.route("/settings/code", methods=['GET', 'POST'])
 def io_code():
     # if os.stat("token.txt").st_size == 0:
-    return render_template("settings/student.html")
+    return render_template("settings/sonos_api.html")
     # else:
     #     return redirect(url_for("io_discover"))
 
@@ -284,7 +284,7 @@ def io_access():
     logger.info(access)
     tockenfile.write(access)
     tockenfile.close()
-    return render_template("settings/student.html",auth=auth_code,access=access)
+    return render_template("settings/sonos_api.html",auth=auth_code,access=access)
 group_name=[]
 @app.route("/settings/discover", methods=['GET', 'POST'])
 def io_discover():
@@ -341,13 +341,13 @@ def io_discover():
             json_response = json.dumps({'group_id':group_id,'household_id':household_id,'group_name':group_name,'data':"Device found",'volume':vol})
 
             return json_response
-            # return render_template("settings/student.html",data="Device found",group_id=group_id,household_id=household_id,group_name=group_name,volume=vol)
+            # return render_template("settings/sonos_api.html",data="Device found",group_id=group_id,household_id=household_id,group_name=group_name,volume=vol)
         else:
             json_response = json.dumps({'data':"NoDevice found"})
             return json_response
 
     else:
-        return render_template("settings/student.html",data="No device found")
+        return render_template("settings/sonos_api.html",data="No device found")
     # return access_token
 group =""
 household =""
@@ -422,7 +422,7 @@ def setVolumes():
     r = json.dumps({"group_name": group_name})
     return r
 
-    # return render_template("settings/student.html",group_name=group_name)
+    # return render_template("settings/sonos_api.html",group_name=group_name)
 
 
 @app.route("/settings/pause", methods=['GET', 'POST'])
@@ -445,7 +445,7 @@ def io_pause():
     sonosfile.close()
     pause(access,household_id,group_id)
     print "paused"
-    # return render_template("settings/student.html")
+    # return render_template("settings/sonos_api.html")
     return ""
 
 @app.route("/settings/play", methods=['GET', 'POST'])
@@ -468,9 +468,65 @@ def io_played():
     sonosfile.close()
     play(access,household_id,group_id)
 
-    # return render_template("settings/student.html")
+    # return render_template("settings/sonos_api.html")
     return ""
 
+@app.route("/settings/getPlaylist", methods=['GET', 'POST'])
+def io_playlist():
+
+    tockenfile = open('token.txt', 'r+')
+    access = tockenfile.readline()
+    tockenfile.close()
+    sonosfile = open('sonos.txt', 'r+')
+    lines = sonosfile.readlines()
+    print access
+    print lines
+    for line in lines:
+        if "household_id:" in line:
+            household_id =  line.rstrip("\n").split(":")[1]
+    print household_id
+    sonosfile.close()
+    # getPlaylist(access,household_id)
+    playlist = getPlaylist(access,household_id)
+    json_response = json.dumps({'playlist': playlist})
+    # print json_response["playlist"]
+    print type(json_response)
+    return json_response
+
+    # return render_template("settings/sonos_api.html")
+    return ""
+#############################
+
+@app.route("/settings/loadplaylist", methods=['GET', 'POST'])
+def io_loadplaylist():
+    tockenfile = open('token.txt', 'r+')
+    access = tockenfile.readline()
+    tockenfile.close()
+    sonosfile = open('sonos.txt', 'r+')
+    lines = sonosfile.readlines()
+    print access
+    print lines
+    for line in lines:
+        if "group_id" in line:
+            group_id = line.rstrip("\n").split(":", 1)[1]
+        if "household_id:" in line:
+            household_id = line.rstrip("\n").split(":")[1]
+    print household_id
+    print group_id
+    sonosfile.close()
+
+    playlist_sonos = flask.request.args.get('playlist_id')
+
+    logger.info(playlist_sonos)
+
+    print playlist_sonos
+
+    loadPlaylist(access, household_id, group_id,str(playlist_sonos))
+
+    return ""
+
+
+#############################
 @app.route("/settings/skipToNextTrack", methods=['GET', 'POST'])
 def io_skipToNextTrack():
     tockenfile = open('token.txt', 'r+')
@@ -490,7 +546,7 @@ def io_skipToNextTrack():
     sonosfile.close()
     skipToNextTrack(access,household_id,group_id)
     print "Next Track"
-    # return render_template("settings/student.html")
+    # return render_template("settings/sonos_api.html")
     return ""
 
 @app.route("/settings/skipToPreviousTrack", methods=['GET', 'POST'])
@@ -512,41 +568,41 @@ def io_skipToPreviousTrack():
     sonosfile.close()
     skipToPreviousTrack(access,household_id,group_id)
     print "Previous Track"
-    # return render_template("settings/student.html")
+    # return render_template("settings/sonos_api.html")
     return ""
 
-@app.route("/settings/ignoreDB", methods=['GET', 'POST'])
-def ignoreDB():
-    tockenfile = open('token.txt', 'r+')
-    access = tockenfile.readline()
-    tockenfile.close()
-    sonosfile = open('sonos.txt', 'r+')
-    lines = sonosfile.readlines()
-    print access
-    print lines
-    for line in lines:
-        if "group_id" in line:
-            group_id = line.rstrip("\n").split(":", 1)[1]
-        if "household_id:" in line:
-            household_id = line.rstrip("\n").split(":")[1]
-    print household_id
-    print group_id
-    sonosfile.close()
-    player = getHouseholds(access, household_id)
-    print player
-    playerIDstoAdd =[]
-    playerIDstoRemove =[]
-
-    for p in player.keys():
-        if "-DB" in p:
-            playerIDstoRemove.append(player[p].encode("utf-8"))
-            del player[p]
-        else:
-            playerIDstoAdd.append(player[p].encode("utf-8"))
-    print player
-    addGroup(access,household_id, group_id, playerIDstoAdd,playerIDstoRemove)
-
-    return ""
+# @app.route("/settings/ignoreDB", methods=['GET', 'POST'])
+# def ignoreDB():
+#     tockenfile = open('token.txt', 'r+')
+#     access = tockenfile.readline()
+#     tockenfile.close()
+#     sonosfile = open('sonos.txt', 'r+')
+#     lines = sonosfile.readlines()
+#     print access
+#     print lines
+#     for line in lines:
+#         if "group_id" in line:
+#             group_id = line.rstrip("\n").split(":", 1)[1]
+#         if "household_id:" in line:
+#             household_id = line.rstrip("\n").split(":")[1]
+#     print household_id
+#     print group_id
+#     sonosfile.close()
+#     player = getHouseholds(access, household_id)
+#     print player
+#     playerIDstoAdd =[]
+#     playerIDstoRemove =[]
+#
+#     for p in player.keys():
+#         if "-DB" in p:
+#             playerIDstoRemove.append(player[p].encode("utf-8"))
+#             del player[p]
+#         else:
+#             playerIDstoAdd.append(player[p].encode("utf-8"))
+#     print player
+#     addGroup(access,household_id, group_id, playerIDstoAdd,playerIDstoRemove)
+#
+#     return ""
 
 
 @app.route("/settings/io", methods=['GET', 'POST'])

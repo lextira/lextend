@@ -34,6 +34,6 @@ STATUS_LED_PIN             = 3
 CONFIG_RESET_HOLD_TIME_SEC = 5
 
 # version
-SOFTWARE_VERSION           = "v4.9-8"
+SOFTWARE_VERSION           = "v4.9-9"
 
 
