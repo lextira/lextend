@@ -143,12 +143,11 @@ def addGroup(tocken,household_id,group_id,playerIDstoAdd,playerIDstoRemove):
 
     data = data +"],\"playerIdsToRemove\":["
     for i in range(len(playerIDstoRemove)):
-        for i in range(len(playerIDstoRemove)):
-            if i == len(playerIDstoRemove) - 1:
-                data = data + "\"" + (playerIDstoRemove[i])+ "\""
-            else:
-                data = data + "\"" + (playerIDstoRemove[i]) + "\","
-
+        # for i in range(len(playerIDstoRemove)):
+        if i == len(playerIDstoRemove) - 1:
+            data = data + "\"" + (playerIDstoRemove[i])+ "\""
+        else:
+            data = data + "\"" + (playerIDstoRemove[i]) + "\","
 
     data = data+"]}"
     print data

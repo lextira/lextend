@@ -264,7 +264,7 @@ def settings_sonos_doorbell():
         time.sleep(20)
         return redirect(url_for("settings_sonos_doorbell")) 
 ############################################################################
-import urllib2
+
 
 @app.route("/settings/code", methods=['GET', 'POST'])
 def io_code():
@@ -571,38 +571,39 @@ def io_skipToPreviousTrack():
     # return render_template("settings/sonos_api.html")
     return ""
 
-# @app.route("/settings/ignoreDB", methods=['GET', 'POST'])
-# def ignoreDB():
-#     tockenfile = open('token.txt', 'r+')
-#     access = tockenfile.readline()
-#     tockenfile.close()
-#     sonosfile = open('sonos.txt', 'r+')
-#     lines = sonosfile.readlines()
-#     print access
-#     print lines
-#     for line in lines:
-#         if "group_id" in line:
-#             group_id = line.rstrip("\n").split(":", 1)[1]
-#         if "household_id:" in line:
-#             household_id = line.rstrip("\n").split(":")[1]
-#     print household_id
-#     print group_id
-#     sonosfile.close()
-#     player = getHouseholds(access, household_id)
-#     print player
-#     playerIDstoAdd =[]
-#     playerIDstoRemove =[]
-#
-#     for p in player.keys():
-#         if "-DB" in p:
-#             playerIDstoRemove.append(player[p].encode("utf-8"))
-#             del player[p]
-#         else:
-#             playerIDstoAdd.append(player[p].encode("utf-8"))
-#     print player
-#     addGroup(access,household_id, group_id, playerIDstoAdd,playerIDstoRemove)
-#
-#     return ""
+@app.route("/settings/ignoreDB", methods=['GET', 'POST'])
+def ignoreDB():
+    tockenfile = open('token.txt', 'r+')
+    access = tockenfile.readline()
+    tockenfile.close()
+    sonosfile = open('sonos.txt', 'r+')
+    lines = sonosfile.readlines()
+    print access
+    print lines
+    for line in lines:
+        if "group_id" in line:
+            group_id = line.rstrip("\n").split(":", 1)[1]
+        if "household_id:" in line:
+            household_id = line.rstrip("\n").split(":")[1]
+    print household_id
+    print group_id
+    sonosfile.close()
+    player = getHouseholds(access, household_id)
+    print player
+    playerIDstoAdd =[]
+    playerIDstoRemove =[]
+
+    for p in player.keys():
+        if "-DB" in p:
+            playerIDstoRemove.append(player[p].encode("utf-8"))
+            del player[p]
+        else:
+            playerIDstoAdd.append(player[p].encode("utf-8"))
+    print player
+
+    addGroup(access,household_id, group_id, playerIDstoAdd,playerIDstoRemove)
+
+    return ""
 
 
 @app.route("/settings/io", methods=['GET', 'POST'])
