@@ -158,6 +158,32 @@ def addGroup(tocken,household_id,group_id,playerIDstoAdd,playerIDstoRemove):
         "https://api.ws.sonos.com/control/api/v1/households/{0}/groups/{1}/groups/modifyGroupMembers".format(
             household_id, group_id), headers=headers,data=data)
     print response
+################create_group#################
+def createGroup(tocken,household_id,group_id,playerIDstoRemove):
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {}".format(tocken)
+    }
+    data =""
+    data = data + "{\"playerIds\":["
+    for i in range(len(playerIDstoRemove)):
+        # for i in range(len(playerIDstoRemove)):
+        if i == len(playerIDstoRemove) - 1:
+            data = data + "\"" + (playerIDstoRemove[i])+ "\""
+        else:
+            data = data + "\"" + (playerIDstoRemove[i]) + "\","
+
+    data = data+"]}"
+    print data
+    # data = '{\"playerIdsToAdd\":[\"RINCON_949F3E01D5E601400\",\"RINCON_949F3E82A2AA01400\"]}'
+
+
+    response = requests.post(
+        "https://api.ws.sonos.com/control/api/v1/households/{0}/groups/createGroup".format(
+            household_id, group_id), headers=headers,data=data)
+    print response
+
+#############################################
 def getPlaylist(tocken,s):
 
    headers = {

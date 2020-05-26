@@ -590,7 +590,6 @@ def ignoreDB():
     sonosfile.close()
     player = getHouseholds(access, household_id)
     print player
-    playerIDstoAdd =[]
     playerIDstoRemove =[]
 
     for p in player.keys():
@@ -598,10 +597,10 @@ def ignoreDB():
             playerIDstoRemove.append(player[p].encode("utf-8"))
             del player[p]
         else:
-            playerIDstoAdd.append(player[p].encode("utf-8"))
+            print "No -DB speaaker fond"
     print player
 
-    addGroup(access,household_id, group_id, playerIDstoAdd,playerIDstoRemove)
+    createGroup(access,household_id, group_id,playerIDstoRemove)
 
     return ""
 
